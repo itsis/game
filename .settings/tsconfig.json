@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": false,
+        "out": "./bin/js/game.js"
+    },
+    "filesGlob": [
+        "./**/*.ts"
+    ],
+    "files": [
+        "./src/ItsisGame.ts",
+        "./src/app.ts",
+        ",/src/ObjInOpenSpace.ts",
+        "./tsDefinitions/p2.d.ts",
+        "./tsDefinitions/phaser.d.ts",
+        "./tsDefinitions/pixi.d.ts"
+    ]
+}

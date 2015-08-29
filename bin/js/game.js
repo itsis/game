@@ -1,50 +1,21 @@
-{
-    "filter";
-    false, "title";
-    "app.ts", "tooltip";
-    "/src/app.ts", "undoManager";
-    {
-        "mark";
-        0, "position";
-        0, "stack";
-        [[{ "start": { "row": 0, "column": 0 }, "end": { "row": 5, "column": 0 }, "action": "insert", "lines": ["window.onload = () => {", "", "    var game = new Itsis.Game();", "", "};", ""], "id": 1 }]];
-    }
-    "ace";
-    {
-        "folds";
-        [], "scrolltop";
-        0, "scrollleft";
-        0, "selection";
-        {
-            "start";
-            {
-                "row";
-                5, "column";
-                0;
-            }
-            "end";
-            {
-                "row";
-                5, "column";
-                0;
-            }
-            "isBackwards";
-            false;
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Itsis;
+(function (Itsis) {
+    var ItsisGame = (function (_super) {
+        __extends(ItsisGame, _super);
+        function ItsisGame() {
+            _super.call(this, 800, 600, Phaser.AUTO, 'content', null);
         }
-        "options";
-        {
-            "guessTabSize";
-            true, "useWrapMode";
-            false, "wrapToView";
-            true;
-        }
-        "firstLineState";
-        0;
-    }
-    "timestamp";
-    1440868753488, "hash";
-    "4e636667bbd69c9a7a85d16f70b82a2fce2e8ba5";
-}
+        return ItsisGame;
+    })(Phaser.Game);
+})(Itsis || (Itsis = {}));
+/// <reference path="../tsDefinitions/phaser.d.ts" />
+/// <reference path='./ItsisGame.ts' />
 window.onload = function () {
-    var game = new Itsis.Game();
+    var game = new Itsis.ItsisGame();
 };
