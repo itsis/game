@@ -1,5 +1,5 @@
 window.onload = () => {
 
-    var game = new Itsis.Game();
+    var game = new Itsis.ItsisGame();
 
 };

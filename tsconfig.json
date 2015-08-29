@@ -3,12 +3,16 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": false,
-        "out": "/home/ubuntu/workspace/bin/js/game.js"
+        "out": "./bin/js/game.js"
     },
     "filesGlob": [
         "./**/*.ts"
     ],
     "files": [
+        "./src/Boot.ts",
+        "./src/ItsisGame.ts",
+        "./src/MainMenu.ts",
+        "./src/Preloader.ts",
         "./src/app.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",
