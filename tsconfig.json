@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": false,
+        "out": "/home/ubuntu/workspace/bin/js/game.js"
+    },
+    "filesGlob": [
+        "./**/*.ts"
+    ],
+    "files": [
+        "./src/app.ts",
+        "./tsDefinitions/p2.d.ts",
+        "./tsDefinitions/phaser.d.ts",
+        "./tsDefinitions/pixi.d.ts"
+    ]
+}
