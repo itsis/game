@@ -1,10 +1,17 @@
+module Itsis {
 
+    export class ItsisGame extends Phaser.Game {
 
-module Itsis{
-	class ItsisGame extends Phaser.Game{
-		constructor(){
-			super(800,600,Phaser.AUTO,'content',null);
+        constructor() {
 
-		}
-	}
+            super(1600, 900, Phaser.AUTO, 'content', null);
+
+            this.state.add('Boot', Boot, true);
+            this.state.add('Preloader', Preloader, false);
+            this.state.add('MainMenu', MainMenu, false);
+
+        }
+
+    }
+
 }
