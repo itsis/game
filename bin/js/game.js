@@ -93,10 +93,57 @@ var Itsis;
             this.state.add('Preloader', Itsis.Preloader, false);
             this.state.add('MainMenu', Itsis.MainMenu, false);
             this.state.add("Credits", Itsis.Credits, false);
+            this.state.add("Jeu", Itsis.Jeu, false);
         }
         return ItsisGame;
     })(Phaser.Game);
     Itsis.ItsisGame = ItsisGame;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
+    var Jeu = (function (_super) {
+        __extends(Jeu, _super);
+        function Jeu() {
+            _super.apply(this, arguments);
+        }
+        Jeu.prototype.preload = function () {
+            var isoPlugin = new Phaser.Plugin.Isometric(this.game);
+            this.game.plugins.add(isoPlugin);
+            this.game.iso.anchor.setTo(0.5, 0.2);
+            this.game.load.json('level_1', 'assets/maps/level_1.json');
+            this.game.load.onFileComplete.add(this.onJSONComplete);
+            this.game.load.image('cube', 'assets/scenery/cube.png');
+        };
+        Jeu.prototype.onJSONComplete = function () {
+            this.level1JSON = this.game.cache.getJSON('level_1');
+            console.log(this.level1JSON);
+            var floorTileName = this.level1JSON.floor.tileName;
+            this.game.load.image(floorTileName, this.level1JSON.floor.url);
+        };
+        Jeu.prototype.create = function () {
+            this.floorGroup = this.game.add.group();
+            this.decorGroup = this.game.add.group();
+            this.spawnTilesFloor();
+            this.spawnCube();
+        };
+        Jeu.prototype.spawnCube = function () {
+            var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
+            cube.anchor.set(0.5);
+        };
+        Jeu.prototype.spawnTilesFloor = function () {
+            var taille = 15 * 38;
+            var tileFloor;
+            for (var xx = 0; xx < taille; xx += 38) {
+                for (var yy = 0; yy < taille; yy += 38) {
+                }
+            }
+        };
+        Jeu.prototype.startMainMenu = function () {
+            this.game.state.start("MainMenu", true, false);
+        };
+        return Jeu;
+    })(Phaser.State);
+    Itsis.Jeu = Jeu;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
@@ -133,6 +180,7 @@ var Itsis;
             this.game.state.start("Credits", true, false);
         };
         MainMenu.prototype.startPlay = function () {
+            this.game.state.start("Jeu", true, false);
         };
         return MainMenu;
     })(Phaser.State);

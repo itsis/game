@@ -13,6 +13,7 @@
         "./src/Character.ts",
         "./src/Credits.ts",
         "./src/ItsisGame.ts",
+        "./src/Jeu.ts",
         "./src/MainMenu.ts",
         "./src/ObjInOpenSpace.ts",
         "./src/OpenSpace.ts",
@@ -20,6 +21,7 @@
         "./src/app.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",
+        "./tsDefinitions/phaser.plugin.isometric.d.ts",
         "./tsDefinitions/pixi.d.ts"
     ]
 }
