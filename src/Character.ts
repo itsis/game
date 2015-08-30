@@ -6,7 +6,8 @@ module Itsis{
 			working =1,
 			lunch = 2,
 			breaktime = 3,
-			goToDesk = 4 	
+			goToDesk = 4,
+			goToExit = 5 	
 		};
 		
 	class Character extends ObjInOpenSpace{
@@ -42,6 +43,21 @@ module Itsis{
 			// this.state = State.working;
 		}
 		
+		updateWorking(timeInOpenSpace){
+			if(timeInOpenSpace>this.endingHour){
+				this.state = State.goToExit;
+			}
+			// TODO : gestion des temps de pause
+			// TODO : gestion du lunch time
+		}
+		
+		updateGoToExit(){
+			// path to Exit
+			
+			//at end
+			this.state = State.home;
+		}
+		
 		update(timeInOpenSpace){
 			switch(timeInOpenSpace){
 				case State.home:
@@ -49,6 +65,12 @@ module Itsis{
 				break;
 				case State.goToDesk:
 					this.updateGoToDesk(timeInOpenSpace);
+				break;
+				case State.working:
+					this.updateWorking(timeInOpenSpace);
+				break;
+				case State.goToExit:
+					this.updateGoToExit();
 				break;
 				default:
 				break;
