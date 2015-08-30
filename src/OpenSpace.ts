@@ -6,7 +6,7 @@ module Itsis{
 
 		id : number;
 		name : String;
-		listOfObj : Thing[];
+		listOfObj : ObjInOpenSpace[];
 	
 	}
 }
