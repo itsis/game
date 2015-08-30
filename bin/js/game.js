@@ -73,7 +73,8 @@ var Itsis;
             var creditsText = this.game.add.text(this.game.world.centerX, 0, creditsContent, creditsTextStyle);
             creditsText.anchor.set(0.5);
             var tween = this.add.tween(creditsText).to({ y: creditsText.height / 2 + this.game.height }, 10000, Phaser.Easing.Linear.None, true);
-            tween.onComplete.add(this.startMainMenu);
+            tween.onComplete.add(this.startMainMenu, this);
+            this.input.onDown.addOnce(this.startMainMenu, this);
         };
         Credits.prototype.startMainMenu = function () {
             this.game.state.start("MainMenu", true, false);
