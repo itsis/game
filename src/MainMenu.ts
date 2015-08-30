@@ -24,10 +24,10 @@ module Itsis {
               fill: "#f00"
             }
 
-            var creditsButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
-            creditsButton.anchor.set(0.5);
-            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "Jouer", buttonTextStyle);
-            creditsButtonText.anchor.set(0.5);
+            var playButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            playButton.anchor.set(0.5);
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "Jouer", buttonTextStyle);
+            playButtonText.anchor.set(0.5);
 
             var creditsButton = this.game.add.button(this.game.world.centerX, 6*this.game.height/10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
             creditsButton.anchor.set(0.5);
