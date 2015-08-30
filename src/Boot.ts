@@ -16,9 +16,17 @@ module Itsis {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.stage.disableVisibilityChange = true;
 
+            let gameWidth:number = 1600;
+            let gameHeight:number = 900;
+
             if (this.game.device.desktop) {
                 //  If you have any desktop specific settings, they can go in here
+                this.game.scale.maxWidth = gameWidth;
+                this.game.scale.maxHeight = gameHeight;
                 this.game.scale.pageAlignHorizontally = true;
+                this.game.scale.pageAlignVertically = true;
+                this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
             }
             else {
                 //  Same goes for mobile settings.
@@ -28,7 +36,6 @@ module Itsis {
             this.game.state.start('Preloader', true, false);
 
         }
-
     }
 
 }

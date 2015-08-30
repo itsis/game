@@ -1,7 +1,8 @@
 /// <reference path="../tsDefinitions/phaser.d.ts" />
 
 module Itsis{
-	class ObjInOpenSpace{
+
+	export class ObjInOpenSpace{
 		sprite : Phaser.Sprite;
 		name : String;
 		id : number;
@@ -9,9 +10,9 @@ module Itsis{
 		locationY : number;
 		scale : number; // redimensionnement de l'image au besoin
 		zIndex : number ; // il est déterminant de préciser dans quel ordre on affiche les sprites, notamment pour pouvoir les superposer.
-		
-		
-			
+
+
+
 	}
-		
+
 }

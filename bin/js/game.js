@@ -16,8 +16,14 @@ var Itsis;
         Boot.prototype.create = function () {
             this.input.maxPointers = 1;
             this.stage.disableVisibilityChange = true;
+            var gameWidth = 1600;
+            var gameHeight = 900;
             if (this.game.device.desktop) {
+                this.game.scale.maxWidth = gameWidth;
+                this.game.scale.maxHeight = gameHeight;
                 this.game.scale.pageAlignHorizontally = true;
+                this.game.scale.pageAlignVertically = true;
+                this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
             }
             else {
             }
@@ -27,6 +33,27 @@ var Itsis;
         return Boot;
     })(Phaser.State);
     Itsis.Boot = Boot;
+})(Itsis || (Itsis = {}));
+/// <reference path="../tsDefinitions/phaser.d.ts" />
+var Itsis;
+(function (Itsis) {
+    var ObjInOpenSpace = (function () {
+        function ObjInOpenSpace() {
+        }
+        return ObjInOpenSpace;
+    })();
+    Itsis.ObjInOpenSpace = ObjInOpenSpace;
+})(Itsis || (Itsis = {}));
+/// <reference path="./ObjInOpenSpace.ts"/>
+var Itsis;
+(function (Itsis) {
+    var Character = (function (_super) {
+        __extends(Character, _super);
+        function Character() {
+            _super.apply(this, arguments);
+        }
+        return Character;
+    })(Itsis.ObjInOpenSpace);
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
@@ -50,11 +77,24 @@ var Itsis;
             _super.apply(this, arguments);
         }
         MainMenu.prototype.create = function () {
-            this.background = this.add.sprite(0, 0, 'mainmenu_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            this.creditsbutton = this.game.add.button(0, 500, 'mainmenu_buttoncredits', this.credits);
-            this.creditsbutton.x = this.game.world.centerX - this.creditsbutton.texture.width / 2;
+            var background = this.add.sprite(0, 0, 'mainmenu_background');
+            background.alpha = 0;
+            this.add.tween(background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            var itsisTextStyle = {
+                font: "bold 72px Arial",
+                fill: "#f00",
+                align: "center"
+            };
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
+            itsisText.anchor.set(0.5);
+            var buttonTextStyle = {
+                font: "32px Arial",
+                fill: "#f00"
+            };
+            var creditsButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.credits, this, 'over', 'out', 'down');
+            creditsButton.anchor.set(0.5);
+            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Credits", buttonTextStyle);
+            creditsButtonText.anchor.set(0.5);
         };
         MainMenu.prototype.credits = function () {
         };
@@ -70,10 +110,13 @@ var Itsis;
             _super.apply(this, arguments);
         }
         Preloader.prototype.preload = function () {
-            this.preloadBar = this.add.sprite(200, 250, 'preloadBar');
+            this.preloadBar = this.add.sprite(0, 0, 'preloadBar');
+            this.preloadBar.x = this.game.world.centerX - this.preloadBar.texture.width / 2;
+            this.preloadBar.y = this.game.world.centerY - this.preloadBar.texture.height / 2;
             this.load.setPreloadSprite(this.preloadBar);
             this.load.image('mainmenu_background', 'assets/images/mainmenu_background.jpg');
             this.load.image('mainmenu_buttoncredits', 'assets/buttons/mainmenu_credits.png');
+            this.game.load.atlas('mainmenu_button', 'assets/buttons/mainmenu_button.png', 'assets/buttons/mainmenu_button.json');
         };
         Preloader.prototype.create = function () {
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
@@ -86,6 +129,8 @@ var Itsis;
     })(Phaser.State);
     Itsis.Preloader = Preloader;
 })(Itsis || (Itsis = {}));
+/// <reference path="../tsDefinitions/phaser.d.ts" />
+/// <reference path='./ItsisGame.ts' />
 window.onload = function () {
     var game = new Itsis.ItsisGame();
 };

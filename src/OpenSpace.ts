@@ -1,6 +1,6 @@
 
 /// <reference path="./ObjInOpenSpace.ts"/>
-module Itsis{
+export module Itsis{
 	class OpenSpace{
 		id : number;
 		name : String;

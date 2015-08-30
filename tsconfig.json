@@ -10,8 +10,11 @@
     ],
     "files": [
         "./src/Boot.ts",
+        "./src/Character.ts",
         "./src/ItsisGame.ts",
         "./src/MainMenu.ts",
+        "./src/ObjInOpenSpace.ts",
+        "./src/OpenSpace.ts",
         "./src/Preloader.ts",
         "./src/app.ts",
         "./tsDefinitions/p2.d.ts",

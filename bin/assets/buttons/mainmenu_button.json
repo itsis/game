@@ -1,0 +1,32 @@
+{"frames": [
+
+  {
+    "filename": "down",
+    "frame": {"x":0,"y":104,"w":300,"h":52},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":300,"h":156},
+    "sourceSize": {"w":300,"h":156}
+  },
+  {
+    "filename": "out",
+    "frame": {"x":0,"y":52,"w":300,"h":52},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":300,"h":156},
+    "sourceSize": {"w":300,"h":156}
+  },
+  {
+    "filename": "over",
+    "frame": {"x":0,"y":0,"w":300,"h":52},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":300,"h":156},
+    "sourceSize": {"w":300,"h":156}
+    }],
+    "meta": {
+      "image": "mainmenu_button.png",
+      "size": {"w":300,"h":156},
+      "scale": "1"
+    }
+  }

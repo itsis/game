@@ -1,6 +1,3 @@
-/// <reference path="pixi.d.ts" />
-/// <reference path="p2.d.ts" />
-
 // Type definitions for Phaser 2.4.3 2015-Aug-24
 // Project: https://github.com/photonstorm/phaser
 

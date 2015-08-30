@@ -2,18 +2,33 @@ module Itsis {
 
     export class MainMenu extends Phaser.State {
 
-        background: Phaser.Sprite;
-        creditsbutton : Phaser.Button;
-
         create() {
+            //Background
+            var background = this.add.sprite(0, 0, 'mainmenu_background');
+            background.alpha = 0;
 
-            this.background = this.add.sprite(0, 0, 'mainmenu_background');
-            this.background.alpha = 0;
+            this.add.tween(background).to({ alpha: 1}, 2000, Phaser.Easing.Bounce.InOut, true);
 
-            this.add.tween(this.background).to({ alpha: 1}, 2000, Phaser.Easing.Bounce.InOut, true);
+            //Title
+            var itsisTextStyle = {
+              font: "bold 72px Arial",
+              fill: "#f00",
+              align: "center"
+            }
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height/10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
+            itsisText.anchor.set(0.5);
 
-            this.creditsbutton = this.game.add.button(0, 500, 'mainmenu_buttoncredits', this.credits);
-            this.creditsbutton.x = this.game.world.centerX - this.creditsbutton.texture.width/2;
+            //Buttons
+            var buttonTextStyle = {
+              font:"32px Arial",
+              fill: "#f00"
+            }
+
+            var creditsButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.credits, this, 'over', 'out', 'down');
+            creditsButton.anchor.set(0.5);
+            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "Credits", buttonTextStyle);
+            creditsButtonText.anchor.set(0.5);
+
         }
 
         credits(){
