@@ -11,6 +11,7 @@
     "files": [
         "./src/Boot.ts",
         "./src/Character.ts",
+        "./src/Credits.ts",
         "./src/ItsisGame.ts",
         "./src/MainMenu.ts",
         "./src/ObjInOpenSpace.ts",

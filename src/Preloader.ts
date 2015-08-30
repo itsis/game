@@ -15,7 +15,6 @@ module Itsis {
 
             //  Load our assets
             this.load.image('mainmenu_background', 'assets/images/mainmenu_background.jpg');
-            this.load.image('mainmenu_buttoncredits', 'assets/buttons/mainmenu_credits.png');
             this.game.load.atlas('mainmenu_button', 'assets/buttons/mainmenu_button.png', 'assets/buttons/mainmenu_button.json');
         }
 

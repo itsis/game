@@ -57,6 +57,33 @@ var Itsis;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
+    var Credits = (function (_super) {
+        __extends(Credits, _super);
+        function Credits() {
+            _super.apply(this, arguments);
+        }
+        Credits.prototype.create = function () {
+            var creditsTextStyle = {
+                font: "bold 24px Arial",
+                fill: "#f00",
+                align: "center"
+            };
+            var creditsContent = "ITSIS - IT Services Industry Simulator";
+            creditsContent += "\n\nHaut Bas Gauche Droite A Start";
+            var creditsText = this.game.add.text(this.game.world.centerX, 0, creditsContent, creditsTextStyle);
+            creditsText.anchor.set(0.5);
+            var tween = this.add.tween(creditsText).to({ y: creditsText.height / 2 + this.game.height }, 10000, Phaser.Easing.Linear.None, true);
+            tween.onComplete.add(this.startMainMenu);
+        };
+        Credits.prototype.startMainMenu = function () {
+            this.game.state.start("MainMenu", true, false);
+        };
+        return Credits;
+    })(Phaser.State);
+    Itsis.Credits = Credits;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
     var ItsisGame = (function (_super) {
         __extends(ItsisGame, _super);
         function ItsisGame() {
@@ -64,6 +91,7 @@ var Itsis;
             this.state.add('Boot', Itsis.Boot, true);
             this.state.add('Preloader', Itsis.Preloader, false);
             this.state.add('MainMenu', Itsis.MainMenu, false);
+            this.state.add("Credits", Itsis.Credits, false);
         }
         return ItsisGame;
     })(Phaser.Game);
@@ -91,16 +119,33 @@ var Itsis;
                 font: "32px Arial",
                 fill: "#f00"
             };
-            var creditsButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.credits, this, 'over', 'out', 'down');
+            var creditsButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
             creditsButton.anchor.set(0.5);
-            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Credits", buttonTextStyle);
+            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Jouer", buttonTextStyle);
+            creditsButtonText.anchor.set(0.5);
+            var creditsButton = this.game.add.button(this.game.world.centerX, 6 * this.game.height / 10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
+            creditsButton.anchor.set(0.5);
+            var creditsButtonText = this.game.add.text(this.game.world.centerX, 6 * this.game.height / 10, "Credits", buttonTextStyle);
             creditsButtonText.anchor.set(0.5);
         };
-        MainMenu.prototype.credits = function () {
+        MainMenu.prototype.startCredits = function () {
+            this.game.state.start("Credits", true, false);
+        };
+        MainMenu.prototype.startPlay = function () {
         };
         return MainMenu;
     })(Phaser.State);
     Itsis.MainMenu = MainMenu;
+})(Itsis || (Itsis = {}));
+/// <reference path="./ObjInOpenSpace.ts"/>
+var Itsis;
+(function (Itsis) {
+    var OpenSpace = (function () {
+        function OpenSpace() {
+        }
+        return OpenSpace;
+    })();
+    Itsis.OpenSpace = OpenSpace;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
@@ -115,7 +160,6 @@ var Itsis;
             this.preloadBar.y = this.game.world.centerY - this.preloadBar.texture.height / 2;
             this.load.setPreloadSprite(this.preloadBar);
             this.load.image('mainmenu_background', 'assets/images/mainmenu_background.jpg');
-            this.load.image('mainmenu_buttoncredits', 'assets/buttons/mainmenu_credits.png');
             this.game.load.atlas('mainmenu_button', 'assets/buttons/mainmenu_button.png', 'assets/buttons/mainmenu_button.json');
         };
         Preloader.prototype.create = function () {

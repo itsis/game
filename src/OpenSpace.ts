@@ -1,9 +1,12 @@
-
 /// <reference path="./ObjInOpenSpace.ts"/>
-export module Itsis{
-	class OpenSpace{
+
+module Itsis{
+
+	export class OpenSpace{
+
 		id : number;
 		name : String;
 		listOfObj : Thing[];
+	
 	}
 }
