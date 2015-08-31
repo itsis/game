@@ -9,6 +9,9 @@ module Itsis{
 		locationY : number;
 		template : ObjInOpenSpaceTemplate;
 		
+		constructor() {
+			
+		}
 	}
 
 }
