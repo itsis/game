@@ -37,6 +37,17 @@ var Itsis;
 /// <reference path="../tsDefinitions/phaser.d.ts" />
 var Itsis;
 (function (Itsis) {
+    var ObjInOpenSpaceTemplate = (function () {
+        function ObjInOpenSpaceTemplate() {
+        }
+        return ObjInOpenSpaceTemplate;
+    })();
+    Itsis.ObjInOpenSpaceTemplate = ObjInOpenSpaceTemplate;
+})(Itsis || (Itsis = {}));
+/// <reference path="../tsDefinitions/phaser.d.ts" />
+/// <reference path="./ObjInOpenSpaceTemplate.ts" />
+var Itsis;
+(function (Itsis) {
     var ObjInOpenSpace = (function () {
         function ObjInOpenSpace() {
         }
@@ -47,11 +58,68 @@ var Itsis;
 /// <reference path="./ObjInOpenSpace.ts"/>
 var Itsis;
 (function (Itsis) {
+    (function (State) {
+        State[State["home"] = 0] = "home";
+        State[State["working"] = 1] = "working";
+        State[State["lunch"] = 2] = "lunch";
+        State[State["breaktime"] = 3] = "breaktime";
+        State[State["goToDesk"] = 4] = "goToDesk";
+        State[State["goToExit"] = 5] = "goToExit";
+    })(Itsis.State || (Itsis.State = {}));
+    var State = Itsis.State;
+    ;
     var Character = (function (_super) {
         __extends(Character, _super);
         function Character() {
             _super.apply(this, arguments);
         }
+        Character.prototype.create = function () {
+            this.state = State.home;
+            this.startingHour = 8;
+            this.endingHour = 18;
+            this.enduranceMax = 100;
+            this.endurance = this.enduranceMax;
+            this.productivity = 100;
+            this.motivation = 70;
+        };
+        ;
+        Character.prototype.updateAtHome = function (timeInOpenSpace) {
+            if (timeInOpenSpace > this.startingHour) {
+                this.state = State.goToDesk;
+            }
+        };
+        ;
+        Character.prototype.updateGoToDesk = function (timeInOpenSpace) {
+            // path to desk 
+        };
+        Character.prototype.updateWorking = function (timeInOpenSpace) {
+            if (timeInOpenSpace > this.endingHour) {
+                this.state = State.goToExit;
+            }
+        };
+        Character.prototype.updateGoToExit = function () {
+            // path to Exit
+            this.state = State.home;
+        };
+        Character.prototype.update = function (timeInOpenSpace) {
+            switch (timeInOpenSpace) {
+                case State.home:
+                    this.updateAtHome(timeInOpenSpace);
+                    break;
+                case State.goToDesk:
+                    this.updateGoToDesk(timeInOpenSpace);
+                    break;
+                case State.working:
+                    this.updateWorking(timeInOpenSpace);
+                    break;
+                case State.goToExit:
+                    this.updateGoToExit();
+                    break;
+                default:
+                    break;
+            }
+        };
+        ;
         return Character;
     })(Itsis.ObjInOpenSpace);
 })(Itsis || (Itsis = {}));
@@ -93,6 +161,7 @@ var Itsis;
             this.state.add('Preloader', Itsis.Preloader, false);
             this.state.add('MainMenu', Itsis.MainMenu, false);
             this.state.add("Credits", Itsis.Credits, false);
+            this.state.add("Loaderjeu", Itsis.Loaderjeu, false);
             this.state.add("Jeu", Itsis.Jeu, false);
         }
         return ItsisGame;
@@ -110,31 +179,28 @@ var Itsis;
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
             this.game.plugins.add(isoPlugin);
             this.game.iso.anchor.setTo(0.5, 0.2);
-            this.game.load.json('level_1', 'assets/maps/level_1.json');
-            this.game.load.onFileComplete.add(this.onJSONComplete);
             this.game.load.image('cube', 'assets/scenery/cube.png');
         };
-        Jeu.prototype.onJSONComplete = function () {
-            this.level1JSON = this.game.cache.getJSON('level_1');
-            console.log(this.level1JSON);
-            var floorTileName = this.level1JSON.floor.tileName;
-            this.game.load.image(floorTileName, this.level1JSON.floor.url);
-        };
         Jeu.prototype.create = function () {
+            this.level1JSON = this.game.cache.getJSON('level_1');
+            var floorTileName = this.level1JSON.floor.tileName;
+            this.game.load.image(floorTileName, 'assets/scenery/' + floorTileName + '.png');
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
-            this.spawnTilesFloor();
+            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
             this.spawnCube();
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
             cube.anchor.set(0.5);
         };
-        Jeu.prototype.spawnTilesFloor = function () {
-            var taille = 15 * 38;
+        Jeu.prototype.spawnTilesFloor = function (taille) {
+            taille *= 38;
             var tileFloor;
             for (var xx = 0; xx < taille; xx += 38) {
                 for (var yy = 0; yy < taille; yy += 38) {
+                    tileFloor = this.game.add.isoSprite(xx, yy, 0, this.level1JSON.floor.tileName, 0, this.floorGroup);
+                    tileFloor.anchor.set(0.5, 0);
                 }
             }
         };
@@ -144,6 +210,23 @@ var Itsis;
         return Jeu;
     })(Phaser.State);
     Itsis.Jeu = Jeu;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
+    var Loaderjeu = (function (_super) {
+        __extends(Loaderjeu, _super);
+        function Loaderjeu() {
+            _super.apply(this, arguments);
+        }
+        Loaderjeu.prototype.preload = function () {
+            this.game.load.json('level_1', 'assets/maps/level_1.json');
+        };
+        Loaderjeu.prototype.create = function () {
+            this.game.state.start('Jeu', true, true);
+        };
+        return Loaderjeu;
+    })(Phaser.State);
+    Itsis.Loaderjeu = Loaderjeu;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
@@ -167,10 +250,10 @@ var Itsis;
                 font: "32px Arial",
                 fill: "#f00"
             };
-            var creditsButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
-            creditsButton.anchor.set(0.5);
-            var creditsButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Jouer", buttonTextStyle);
-            creditsButtonText.anchor.set(0.5);
+            var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            playButton.anchor.set(0.5);
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Jouer", buttonTextStyle);
+            playButtonText.anchor.set(0.5);
             var creditsButton = this.game.add.button(this.game.world.centerX, 6 * this.game.height / 10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
             creditsButton.anchor.set(0.5);
             var creditsButtonText = this.game.add.text(this.game.world.centerX, 6 * this.game.height / 10, "Credits", buttonTextStyle);
@@ -180,7 +263,7 @@ var Itsis;
             this.game.state.start("Credits", true, false);
         };
         MainMenu.prototype.startPlay = function () {
-            this.game.state.start("Jeu", true, false);
+            this.game.state.start("Loaderjeu", true, false);
         };
         return MainMenu;
     })(Phaser.State);

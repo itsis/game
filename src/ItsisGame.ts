@@ -13,6 +13,7 @@ module Itsis {
             this.state.add("Credits", Credits, false);
 
             // Actual game
+            this.state.add("Loaderjeu", Loaderjeu, false);
             this.state.add("Jeu", Jeu, false);
 
         }

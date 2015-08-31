@@ -41,7 +41,7 @@ module Itsis {
         }
 
         startPlay(){
-            this.game.state.start("Jeu", true, false);
+            this.game.state.start("Loaderjeu", true, false);
         }
     }
 
