@@ -180,15 +180,15 @@ var Itsis;
             this.game.plugins.add(isoPlugin);
             this.game.iso.anchor.setTo(0.5, 0.2);
             this.game.load.image('cube', 'assets/scenery/cube.png');
-        };
-        Jeu.prototype.create = function () {
             this.level1JSON = this.game.cache.getJSON('level_1');
             var floorTileName = this.level1JSON.floor.tileName;
             this.game.load.image(floorTileName, 'assets/scenery/' + floorTileName + '.png');
+        };
+        Jeu.prototype.create = function () {
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
             this.spawnCube();
+            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
@@ -222,7 +222,7 @@ var Itsis;
             this.game.load.json('level_1', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
-            this.game.state.start('Jeu', true, true);
+            this.game.state.start('Jeu', true, false);
         };
         return Loaderjeu;
     })(Phaser.State);

@@ -19,26 +19,26 @@ module Itsis {
           this.game.iso.anchor.setTo(0.5, 0.2);
 
           // Load Level assets list
-          this.game.load.json('level_1', 'assets/maps/level_1.json');
+
           this.game.load.image('cube', 'assets/scenery/cube.png');
 
+          this.level1JSON = this.game.cache.getJSON('level_1');
+      
 
+          var floorTileName = this.level1JSON.floor.tileName;
+           this.game.load.image(floorTileName, 'assets/scenery/'+floorTileName+'.png');
         }
 
 
         create() {
 
-            this.level1JSON = this.game.cache.getJSON('level_1');
-
-            var floorTileName = this.level1JSON.floor.tileName;
-            this.game.load.image(floorTileName, 'assets/scenery/'+floorTileName+'.png');
-
             // Create a group for our tiles.
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
             // Let's make a load of tiles on a grid.
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
+
             this.spawnCube();
+            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
 
         }
 
