@@ -1,3 +1,5 @@
+/// <reference path="./PlayInOpenSpace.ts" />
+
 module Itsis {
 
     export class ItsisGame extends Phaser.Game {
@@ -10,6 +12,7 @@ module Itsis {
             this.state.add('Preloader', Preloader, false);
             this.state.add('MainMenu', MainMenu, false);
             this.state.add("Credits", Credits, false);
+            this.state.add("PlayInOpenSpace", PlayInOpenSpace, false);
 
         }
 

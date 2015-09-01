@@ -9,9 +9,18 @@
         "./**/*.ts"
     ],
     "files": [
-        "./src/ItsisGame.ts",
+        // "./src/ItsisGame.ts",
+        
+        "./src/ObjInOpenSpace.ts",
+        "./src/ObjInOpenSpaceFactory.ts",
+        "./src/OpenSpace.ts",
+        "./src/Character.ts",
+        "./src/MainMenu.ts",
+        "./src/Credits.ts",
+        "./src/Preloader.ts",
+        "./src/PlayInOpenSpace.ts",
+        "./src/Boot.ts",
         "./src/app.ts",
-        ",/src/ObjInOpenSpace.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",
         "./tsDefinitions/pixi.d.ts"

@@ -1,0 +1,16 @@
+{
+	"sprites": 
+		[
+
+			{
+				"id": "table",
+				"path" : "assets/images/table.png"
+			},
+			
+			
+			{
+				"id": "tableau",
+				"path" : "assets/images/tableau.png"
+			}
+		]
+}
