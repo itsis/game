@@ -20,6 +20,11 @@
 					"id":"table",
 					"posx" : 100,
 					"posy" : 500
+				},
+				{
+					"id":"entree",
+					"posx" : 400,
+					"posy" : 750
 				}
 			]
 		}	

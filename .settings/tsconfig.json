@@ -14,7 +14,7 @@
         "./src/ObjInOpenSpace.ts",
         "./src/ObjInOpenSpaceFactory.ts",
         "./src/OpenSpace.ts",
-        "./src/Character.ts",
+        "./src/CharacterOS.ts",
         "./src/MainMenu.ts",
         "./src/Credits.ts",
         "./src/Preloader.ts",

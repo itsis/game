@@ -1,5 +1,3 @@
-/// <reference path="./ObjInOpenSpace.ts"/>
-
 module Itsis{
 	export enum State{
 			home = 0,
@@ -10,7 +8,8 @@ module Itsis{
 			goToExit = 5 	
 		};
 		
-	class Character extends ObjInOpenSpace{
+	export class CharacterOS extends ObjInOpenSpace{
+		static listOfCharacter : CharacterOS[];
 		
 		startingHour : number;
 		endingHour : number;
@@ -20,7 +19,8 @@ module Itsis{
 		motivation : number; // base 100
 		state : number;
 		
-		create(){
+		constructor(){
+			super();
 			this.state = State.home;
 			this.startingHour = 8;
 			this.endingHour = 18;
@@ -28,6 +28,7 @@ module Itsis{
 			this.endurance = this.enduranceMax;
 			this.productivity = 100; 	
 			this.motivation = 70;
+			CharacterOS.listOfCharacter.push(this);
 		};
 		
 		updateAtHome(timeInOpenSpace){
