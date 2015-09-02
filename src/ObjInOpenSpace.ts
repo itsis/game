@@ -7,12 +7,9 @@ module Itsis{
 		id : number;
 		locationX : number; // localisation sur l'openspace coord X/Y provient du tilemap de l'openspace
 		locationY : number;
-		sprite : Phaser.Sprite;
 		template : ObjInOpenSpaceTemplate;
-		
-		constructor() {
-			
-		}
+		sprite : Phaser.Sprite;
+
 	}
 
 }
