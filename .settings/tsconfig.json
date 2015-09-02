@@ -3,17 +3,22 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": false,
-        "out": "./bin/js/game.js"
+        "out": "./bin/js/game.js",
+        "removeComments": true,
+        "buildOnSave": true,
+        "noLib" : false, 
+        "noResolve" : false
     },
     "filesGlob": [
         "./**/*.ts"
     ],
     "files": [
-        "./src/ItsisGame.ts",
-        "./src/app.ts",
-        ",/src/ObjInOpenSpace.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",
-        "./tsDefinitions/pixi.d.ts"
+        "./tsDefinitions/pixi.d.ts",
+        "./tsDefinitions/phaser.plugin.isometric.d.ts",
+        "./src/ItsisGame.ts",
+        "./src/app.ts",
+        ",/src/ObjInOpenSpace.ts"        
     ]
 }

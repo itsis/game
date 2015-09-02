@@ -1,0 +1,19 @@
+{
+	"sprites": 
+		[
+
+			{
+				"id": "table",
+				"path" : "assets/images/table.png"
+			},
+			{
+				"id": "entree",
+				"path" : "assets/images/entree.png"
+			},
+			
+			{
+				"id": "tableau",
+				"path" : "assets/images/tableau.png"
+			}
+		]
+}

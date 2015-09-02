@@ -1,0 +1,33 @@
+{
+	"openSpace":[
+		{
+			"id":1,
+			"name":"test",
+			"sizex" : 800,
+			"sizey" : 600,
+			"objInOpenSpace":[
+				{
+					"id":"table",
+					"posx" : 100,
+					"posy" : 100
+				},
+				{
+					"id":"tableau",
+					"posx" : 600,
+					"posy" : 100
+				},
+				{
+					"id":"table",
+					"posx" : 100,
+					"posy" : 500
+				},
+				{
+					"id":"entree",
+					"posx" : 400,
+					"posy" : 750
+				}
+			]
+		}	
+	]
+	
+}

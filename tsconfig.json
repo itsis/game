@@ -10,16 +10,20 @@
     ],
     "files": [
         "./src/Boot.ts",
-        "./src/Character.ts",
+        "./src/CharacterOS.ts",
         "./src/Credits.ts",
         "./src/ItsisGame.ts",
+        "./src/Jeu.ts",
+        "./src/Loaderjeu.ts",
         "./src/MainMenu.ts",
         "./src/ObjInOpenSpace.ts",
+        "./src/ObjInOpenSpaceTemplate.ts",
         "./src/OpenSpace.ts",
         "./src/Preloader.ts",
         "./src/app.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",
+        "./tsDefinitions/phaser.plugin.isometric.d.ts",
         "./tsDefinitions/pixi.d.ts"
     ]
 }

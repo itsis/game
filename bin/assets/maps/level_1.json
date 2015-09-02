@@ -1,0 +1,25 @@
+{
+
+    "floor":{
+        "tileName":"tile_floor",
+        "levelSize":15
+    },
+
+    "usable":{
+
+        "desk_1":{
+            "location":{
+                "1":{"x":0, "y":0 },
+                "2":{"x":3, "y":1 }
+            }
+        },
+
+        "cube":{
+            "location":{
+                "1":{"x":5, "y":5}
+            }
+        }
+
+    }
+
+}
