@@ -26,6 +26,7 @@ module Itsis {
 
           this.game.load.image('cube', 'assets/scenery/cube.png');
           this.game.load.image('desk', 'assets/scenery/deskcomp.png');
+          this.game.load.image('entree', 'assets/scenery/tile_entree.png');
 
           this.level1JSON = this.game.cache.getJSON('level_1');
 
@@ -50,29 +51,33 @@ module Itsis {
             this.decorGroup = this.game.add.group();
             // Let's make a load of tiles on a grid.
 
-            this.spawnCube();
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
 
-            var tempChar = new CharacterOS();
+            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
+            this.spawnCube();
+            let tempChar = new CharacterOS();
             tempChar.sprite = this.game.add.sprite(280,380,"perso");
             tempChar.sprite.frame = 0;
             tempChar.sprite.animations.add("down",[0,1,2,3],10,true);
             tempChar.sprite.animations.add("left",[4,5,6,7],10,true);
             tempChar.sprite.animations.add("right",[8,9,10,11],10,true);
             tempChar.sprite.animations.add("up",[12,13,14,15],10,true);
-            
+
             tempChar.sprite.visible=false;
 
         }
 
         spawnCube(){
-          var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
+          let cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
           cube.anchor.set(0.5);
-          var tmpdesk = this.game.add.isoSprite(120,120,0,'desk',0,this.decorGroup);
+          let tmpdesk = this.game.add.isoSprite(152,152,0,'desk',0,this.decorGroup);
           tmpdesk.anchor.set(0.5);
-          tempObjDesk = new ObjInOpenSpace();
+          let tempObjDesk = new ObjInOpenSpace();
           tempObjDesk.sprite = tmpdesk;
           tempObjDesk.typeItem = "desk";
+          let tempObjEntree = new ObjInOpenSpace();
+          tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
+          tempObjEntree.sprite.anchor.set(0.5,0);
+          tempObjEntree.typeItem = "entree";
           // console.log(tmpdesk);
 
         }
@@ -97,8 +102,8 @@ module Itsis {
         formatHour(){
           if ((this.game.time.time - this.lastTicksHour) >= 1000 ){
             this.actualDate+=0.10;
-            var tempHour = parseInt(this.actualDate);
-            var tempMin = parseInt((this.actualDate-tempHour) * 100);
+            let tempHour = parseInt(this.actualDate);
+            let tempMin = parseInt((this.actualDate-tempHour) * 100);
             if (tempMin>=60){
               this.actualDate=tempHour+1;
             }
@@ -114,7 +119,7 @@ module Itsis {
 
         render(){
           this.formatHour();
-          for (var itChar = 0; itChar < CharacterOS.listOfCharacter.length; itChar++){
+          for (let itChar in CharacterOS.listOfCharacter){
             tempChar = CharacterOS.listOfCharacter[itChar];
 
             tempChar.update(this.actualDate);

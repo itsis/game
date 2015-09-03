@@ -21,12 +21,13 @@ module Itsis{
 		motivation : number; // base 100
 		state : number;
 		desk : ObjInOpenSpace = null;
+		entree : ObjInOpenSpace = null;
 
 		constructor(){
 			super();
 			this.state = State.home;
 			this.startingHour = 8;
-			this.endingHour = 18;
+			this.endingHour = 9;
 			this.enduranceMax = 100;
 			this.endurance = this.enduranceMax;
 			this.productivity = 100;
@@ -35,58 +36,81 @@ module Itsis{
 			CharacterOS.listOfCharacter.push(this);
 		};
 
-		updateAtHome(timeInOpenSpace){
-			if (timeInOpenSpace > this.startingHour){
-				this.sprite.visible=true;
-				this.state=State.goToDesk;
+		findObjInOS(typeItem : String){
+			let objToReturn = null;
+			for (let objOs in ObjInOpenSpace.listOfObj ){
+				if (ObjInOpenSpace.listOfObj[objOs].typeItem == typeItem){
+					objToReturn = ObjInOpenSpace.listOfObj[objOs];
+				}
+			}
+			return objToReturn;
+		}
+
+		goToLocation(location : ObjInOpenSpace){
+			let posx=location.sprite.position.x;
+			let posy=location.sprite.position.y;
+			let width=location.sprite.width/2;
+
+			if ((posx-width-this.sprite.position.x)>5 || (posx-width-this.sprite.position.x)<-5){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
+				if ((posx-width)>this.sprite.position.x){
+					this.sprite.position.x=this.sprite.position.x+5;
+					if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
+
+				}else{
+					this.sprite.position.x=this.sprite.position.x-5;
+					if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
+				}
+			}else{
+				if ((posy-this.sprite.position.y)>20 || (posy-this.sprite.position.y)<-20){
+
+					if (posy>this.sprite.position.y){
+						this.sprite.position.y=this.sprite.position.y+5;
+						if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
+					}else{
+						this.sprite.position.y=this.sprite.position.y-5;
+						if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
+					}
+				}else{
+					this.sprite.animations.stop();
+					return true;
+				}
+			}
+			return false;
+
+		}
+
+		updateAtHome(timeInOpenSpace : number){
+			// let entree = null;
+			if (timeInOpenSpace > this.startingHour && timeInOpenSpace < this.endingHour){
+				if (this.entree == null){
+					this.entree = this.findObjInOS("entree");
+				}
+				if (this.entree != null){
+					this.sprite.visible=true;
+					this.sprite.x = this.entree.sprite.x;
+					this.sprite.y = this.entree.sprite.y;
+					this.state=State.goToDesk;
+				}
 			}
 		};
 
-		updateGoToDesk(timeInOpenSpace){
+		updateGoToDesk(){
 			// path to desk
 			if (this.desk == null){
-				for(var itObj = 0;itObj < ObjInOpenSpace.listOfObj.length; itObj++){
-					if (ObjInOpenSpace.listOfObj[itObj].typeItem == "desk"){
-						this.desk = ObjInOpenSpace.listOfObj[itObj]
-					}
-				}
+				this.desk = this.findObjInOS("desk");
 			}
 			if (this.desk!=null){
-				var posx=this.desk.sprite.position.x;
-				var posy=this.desk.sprite.position.y;
-
-				if ((posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<-20){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
-					if (posx>this.sprite.position.x){
-						this.sprite.position.x=this.sprite.position.x+5;
-						if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
-
-					}else{
-						this.sprite.position.x=this.sprite.position.x-5;
-						if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
-					}
-				}else{
-					if ((posy-this.sprite.position.y)>20 || (posy-this.sprite.position.y)<-20){
-						
-						if (posy>this.sprite.position.y){
-							this.sprite.position.y=this.sprite.position.y+5;
-							if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
-						}else{
-							this.sprite.position.y=this.sprite.position.y-5;
-							if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
-						}
-					}else{
-						this.sprite.animations.stop();
-					}
-				}
+				let ret = this.goToLocation(this.desk);
+				if (ret) this.state = State.working;
 			}
 			//At end
-			// this.state = State.working;
+
 		}
 
-		updateWorking(timeInOpenSpace){
+		updateWorking(timeInOpenSpace : number){
 			if(timeInOpenSpace>this.endingHour){
 				this.state = State.goToExit;
-				this.sprite.visible=false;
+				// this.sprite.visible=false;
 			}
 			// TODO : gestion des temps de pause
 
@@ -94,10 +118,17 @@ module Itsis{
 		}
 
 		updateGoToExit(){
-			// path to Exit
+			if (this.entree == null){
+				this.entree = this.findObjInOS("entree");
+			}
+			if (this.entree!=null){
+				let ret = this.goToLocation(this.entree);
+				if (ret){
+					this.state = State.home;
+					this.sprite.visible=false;
+				}
+			}
 
-			//at end
-			this.state = State.home;
 		}
 
 		update(timeInOpenSpace){
@@ -106,7 +137,7 @@ module Itsis{
 					this.updateAtHome(timeInOpenSpace);
 				break;
 				case State.goToDesk:
-					this.updateGoToDesk(timeInOpenSpace);
+					this.updateGoToDesk();
 				break;
 				case State.working:
 					this.updateWorking(timeInOpenSpace);

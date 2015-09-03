@@ -75,9 +75,10 @@ var Itsis;
         function CharacterOS() {
             _super.call(this);
             this.desk = null;
+            this.entree = null;
             this.state = State.home;
             this.startingHour = 8;
-            this.endingHour = 18;
+            this.endingHour = 9;
             this.enduranceMax = 100;
             this.endurance = this.enduranceMax;
             this.productivity = 100;
@@ -85,70 +86,95 @@ var Itsis;
             CharacterOS.listOfCharacter.push(this);
         }
         ;
+        CharacterOS.prototype.findObjInOS = function (typeItem) {
+            var objToReturn = null;
+            for (var objOs in Itsis.ObjInOpenSpace.listOfObj) {
+                if (Itsis.ObjInOpenSpace.listOfObj[objOs].typeItem == typeItem) {
+                    objToReturn = Itsis.ObjInOpenSpace.listOfObj[objOs];
+                }
+            }
+            return objToReturn;
+        };
+        CharacterOS.prototype.goToLocation = function (location) {
+            var posx = location.sprite.position.x;
+            var posy = location.sprite.position.y;
+            var width = location.sprite.width / 2;
+            if ((posx - width - this.sprite.position.x) > 5 || (posx - width - this.sprite.position.x) < -5) {
+                if ((posx - width) > this.sprite.position.x) {
+                    this.sprite.position.x = this.sprite.position.x + 5;
+                    if (this.sprite.animations.name != "right") {
+                        this.sprite.animations.play("right");
+                    }
+                }
+                else {
+                    this.sprite.position.x = this.sprite.position.x - 5;
+                    if (this.sprite.animations.name != "left") {
+                        this.sprite.animations.play("left");
+                    }
+                }
+            }
+            else {
+                if ((posy - this.sprite.position.y) > 20 || (posy - this.sprite.position.y) < -20) {
+                    if (posy > this.sprite.position.y) {
+                        this.sprite.position.y = this.sprite.position.y + 5;
+                        if (this.sprite.animations.name != "down") {
+                            this.sprite.animations.play("down");
+                        }
+                    }
+                    else {
+                        this.sprite.position.y = this.sprite.position.y - 5;
+                        if (this.sprite.animations.name != "up") {
+                            this.sprite.animations.play("up");
+                        }
+                    }
+                }
+                else {
+                    this.sprite.animations.stop();
+                    return true;
+                }
+            }
+            return false;
+        };
         CharacterOS.prototype.updateAtHome = function (timeInOpenSpace) {
-            if (timeInOpenSpace > this.startingHour) {
-                this.sprite.visible = true;
-                this.state = State.goToDesk;
+            if (timeInOpenSpace > this.startingHour && timeInOpenSpace < this.endingHour) {
+                if (this.entree == null) {
+                    this.entree = this.findObjInOS("entree");
+                }
+                if (this.entree != null) {
+                    this.sprite.visible = true;
+                    this.sprite.x = this.entree.sprite.x;
+                    this.sprite.y = this.entree.sprite.y;
+                    this.state = State.goToDesk;
+                }
             }
         };
         ;
-        CharacterOS.prototype.updateGoToDesk = function (timeInOpenSpace) {
+        CharacterOS.prototype.updateGoToDesk = function () {
             if (this.desk == null) {
-                for (var itObj = 0; itObj < Itsis.ObjInOpenSpace.listOfObj.length; itObj++) {
-                    if (Itsis.ObjInOpenSpace.listOfObj[itObj].typeItem == "desk") {
-                        this.desk = Itsis.ObjInOpenSpace.listOfObj[itObj];
-                    }
-                }
+                this.desk = this.findObjInOS("desk");
             }
             if (this.desk != null) {
-                var posx = this.desk.sprite.position.x;
-                var posy = this.desk.sprite.position.y;
-                if ((posx - this.sprite.position.x) > 20 || (posx - this.sprite.position.x) < -20) {
-                    if (posx > this.sprite.position.x) {
-                        this.sprite.position.x = this.sprite.position.x + 5;
-                        if (this.sprite.animations.name != "right") {
-                            this.sprite.animations.play("right");
-                        }
-                    }
-                    else {
-                        this.sprite.position.x = this.sprite.position.x - 5;
-                        if (this.sprite.animations.name != "left") {
-                            this.sprite.animations.play("left");
-                        }
-                    }
-                    this.sprite;
-                }
-                else {
-                    if ((posy - this.sprite.position.y) > 20 || (posy - this.sprite.position.y) < -20) {
-                        console.log(posy - this.sprite.position.y);
-                        if (posy > this.sprite.position.y) {
-                            this.sprite.position.y = this.sprite.position.y + 5;
-                            if (this.sprite.animations.name != "down") {
-                                this.sprite.animations.play("down");
-                            }
-                        }
-                        else {
-                            this.sprite.position.y = this.sprite.position.y - 5;
-                            if (this.sprite.animations.name != "up") {
-                                this.sprite.animations.play("up");
-                            }
-                        }
-                    }
-                    else {
-                        this.sprite.animations.stop();
-                    }
-                }
+                var ret = this.goToLocation(this.desk);
+                if (ret)
+                    this.state = State.working;
             }
         };
         CharacterOS.prototype.updateWorking = function (timeInOpenSpace) {
             if (timeInOpenSpace > this.endingHour) {
                 this.state = State.goToExit;
-                this.sprite.visible = false;
             }
         };
         CharacterOS.prototype.updateGoToExit = function () {
-            // path to Exit
-            this.state = State.home;
+            if (this.entree == null) {
+                this.entree = this.findObjInOS("entree");
+            }
+            if (this.entree != null) {
+                var ret = this.goToLocation(this.entree);
+                if (ret) {
+                    this.state = State.home;
+                    this.sprite.visible = false;
+                }
+            }
         };
         CharacterOS.prototype.update = function (timeInOpenSpace) {
             switch (this.state) {
@@ -156,7 +182,7 @@ var Itsis;
                     this.updateAtHome(timeInOpenSpace);
                     break;
                 case State.goToDesk:
-                    this.updateGoToDesk(timeInOpenSpace);
+                    this.updateGoToDesk();
                     break;
                 case State.working:
                     this.updateWorking(timeInOpenSpace);
@@ -234,6 +260,7 @@ var Itsis;
             this.game.iso.anchor.setTo(0.5, 0.2);
             this.game.load.image('cube', 'assets/scenery/cube.png');
             this.game.load.image('desk', 'assets/scenery/deskcomp.png');
+            this.game.load.image('entree', 'assets/scenery/tile_entree.png');
             this.level1JSON = this.game.cache.getJSON('level_1');
             var floorTileName = this.level1JSON.floor.tileName;
             this.game.load.image(floorTileName, 'assets/scenery/' + floorTileName + '.png');
@@ -246,8 +273,8 @@ var Itsis;
             this.text = this.game.add.text(0, 0, "hello", style);
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
-            this.spawnCube();
             this.spawnTilesFloor(this.level1JSON.floor.levelSize);
+            this.spawnCube();
             var tempChar = new Itsis.CharacterOS();
             tempChar.sprite = this.game.add.sprite(280, 380, "perso");
             tempChar.sprite.frame = 0;
@@ -260,11 +287,15 @@ var Itsis;
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
             cube.anchor.set(0.5);
-            var tmpdesk = this.game.add.isoSprite(120, 120, 0, 'desk', 0, this.decorGroup);
+            var tmpdesk = this.game.add.isoSprite(152, 152, 0, 'desk', 0, this.decorGroup);
             tmpdesk.anchor.set(0.5);
-            tempObjDesk = new Itsis.ObjInOpenSpace();
+            var tempObjDesk = new Itsis.ObjInOpenSpace();
             tempObjDesk.sprite = tmpdesk;
             tempObjDesk.typeItem = "desk";
+            var tempObjEntree = new Itsis.ObjInOpenSpace();
+            tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
+            tempObjEntree.sprite.anchor.set(0.5, 0);
+            tempObjEntree.typeItem = "entree";
         };
         Jeu.prototype.spawnTilesFloor = function (taille) {
             taille *= 38;
@@ -298,7 +329,7 @@ var Itsis;
         };
         Jeu.prototype.render = function () {
             this.formatHour();
-            for (var itChar = 0; itChar < Itsis.CharacterOS.listOfCharacter.length; itChar++) {
+            for (var itChar in Itsis.CharacterOS.listOfCharacter) {
                 tempChar = Itsis.CharacterOS.listOfCharacter[itChar];
                 tempChar.update(this.actualDate);
             }
