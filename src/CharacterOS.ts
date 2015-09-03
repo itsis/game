@@ -20,6 +20,7 @@ module Itsis{
 		productivity : number; // base 100
 		motivation : number; // base 100
 		state : number;
+		desk : ObjInOpenSpace = null;
 
 		constructor(){
 			super();
@@ -43,7 +44,41 @@ module Itsis{
 
 		updateGoToDesk(timeInOpenSpace){
 			// path to desk
+			if (this.desk == null){
+				for(var itObj = 0;itObj < ObjInOpenSpace.listOfObj.length; itObj++){
+					if (ObjInOpenSpace.listOfObj[itObj].typeItem == "desk"){
+						this.desk = ObjInOpenSpace.listOfObj[itObj]
+					}
+				}
+			}
+			if (this.desk!=null){
+				var posx=this.desk.sprite.position.x;
+				var posy=this.desk.sprite.position.y;
 
+				if ((posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<-20){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
+					if (posx>this.sprite.position.x){
+						this.sprite.position.x=this.sprite.position.x+5;
+						if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
+
+					}else{
+						this.sprite.position.x=this.sprite.position.x-5;
+						if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
+					}
+				}else{
+					if ((posy-this.sprite.position.y)>20 || (posy-this.sprite.position.y)<-20){
+						
+						if (posy>this.sprite.position.y){
+							this.sprite.position.y=this.sprite.position.y+5;
+							if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
+						}else{
+							this.sprite.position.y=this.sprite.position.y-5;
+							if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
+						}
+					}else{
+						this.sprite.animations.stop();
+					}
+				}
+			}
 			//At end
 			// this.state = State.working;
 		}
@@ -54,7 +89,8 @@ module Itsis{
 				this.sprite.visible=false;
 			}
 			// TODO : gestion des temps de pause
-			// TODO : gestion du lunch time
+
+	// TODO : gestion du lunch time
 		}
 
 		updateGoToExit(){

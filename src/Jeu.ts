@@ -25,6 +25,7 @@ module Itsis {
           // Load Level assets list
 
           this.game.load.image('cube', 'assets/scenery/cube.png');
+          this.game.load.image('desk', 'assets/scenery/deskcomp.png');
 
           this.level1JSON = this.game.cache.getJSON('level_1');
 
@@ -59,7 +60,7 @@ module Itsis {
             tempChar.sprite.animations.add("left",[4,5,6,7],10,true);
             tempChar.sprite.animations.add("right",[8,9,10,11],10,true);
             tempChar.sprite.animations.add("up",[12,13,14,15],10,true);
-            tempChar.sprite.animations.play("right");
+            
             tempChar.sprite.visible=false;
 
         }
@@ -67,6 +68,12 @@ module Itsis {
         spawnCube(){
           var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
           cube.anchor.set(0.5);
+          var tmpdesk = this.game.add.isoSprite(120,120,0,'desk',0,this.decorGroup);
+          tmpdesk.anchor.set(0.5);
+          tempObjDesk = new ObjInOpenSpace();
+          tempObjDesk.sprite = tmpdesk;
+          tempObjDesk.typeItem = "desk";
+          // console.log(tmpdesk);
 
         }
 
@@ -109,6 +116,7 @@ module Itsis {
           this.formatHour();
           for (var itChar = 0; itChar < CharacterOS.listOfCharacter.length; itChar++){
             tempChar = CharacterOS.listOfCharacter[itChar];
+
             tempChar.update(this.actualDate);
           }
         }
