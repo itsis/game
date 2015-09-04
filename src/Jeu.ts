@@ -7,8 +7,8 @@ module Itsis {
         decorGroup: Phaser.Group;
         cursorPos: Phaser.Plugin.Isometric.Point3;
 
-        level1JSON;
-
+        levelJSON;
+        sceneryJSON;
 
 
         preload(){
@@ -18,43 +18,62 @@ module Itsis {
           this.game.plugins.add(isoPlugin);
           this.game.iso.anchor.setTo(0.5, 0.2);
 
-          // Load Level assets list
+          // Load assets & level data
+          this.levelJSON = this.game.cache.getJSON('level');
+          this.sceneryJSON =  this.game.cache.getJSON('scenery');
+          // Load level images
+            // Load floor
+          this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
+            // Load assets
+          for (let cptObj=0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length ; cptObj++){
+              let idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+              for (let scen in this.sceneryJSON){
+                  if (scen.toString() == idObj){
+                    var urlObj = this.sceneryJSON[scen][0].url;
+                  };
+              }
+              this.game.load.image(idObj, 'assets/scenery/' + urlObj);
 
-          this.game.load.image('cube', 'assets/scenery/cube.png');
+          }
 
-          this.level1JSON = this.game.cache.getJSON('level_1');
-      
 
-          var floorTileName = this.level1JSON.floor.tileName;
-           this.game.load.image(floorTileName, 'assets/scenery/'+floorTileName+'.png');
+
         }
-
 
         create() {
 
-            // Create a group for our tiles.
+            // Create groups for assets
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
-            // Let's make a load of tiles on a grid.
 
-            this.spawnCube();
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
+            // Floor building
+            this.spawnTilesFloor(this.levelJSON.openSpace.sizex, this.levelJSON.openSpace.sizey);
+
+            // Sprite in openspace creation
+            for (let cptObj=0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length ; cptObj++){
+                let idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+                for (let scen in this.sceneryJSON){
+                    if (scen.toString() == idObj){
+                        let newObj = new ObjInOpenSpace();
+                        newObj.typeItem = this.sceneryJSON[scen][0].type;
+                    };
+                }
+            }
 
         }
 
         spawnCube(){
           var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
           cube.anchor.set(0.5);
-
         }
 
-        spawnTilesFloor(taille: number) {
-            taille *= 38;
-
+        spawnTilesFloor(sizeX: number, sizeY: number) {
+            sizeX *= 38;
+            sizeY *= 38
             var tileFloor;
-            for (let xx = 0; xx < taille; xx += 38) {
-                for (let yy = 0; yy < taille; yy += 38) {
-                   tileFloor = this.game.add.isoSprite(xx, yy, 0, this.level1JSON.floor.tileName, 0, this.floorGroup);
+            for (let xx = 0; xx < sizeX; xx += 38) {
+                for (let yy = 0; yy < sizeY; yy += 38) {
+                   tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                    tileFloor.anchor.set(0.5, 0);
                 }
             }

@@ -50,7 +50,9 @@ var Itsis;
 (function (Itsis) {
     var ObjInOpenSpace = (function () {
         function ObjInOpenSpace() {
+            ObjInOpenSpace.listOfObj.push(this);
         }
+        ObjInOpenSpace.listOfObj = [];
         return ObjInOpenSpace;
     })();
     Itsis.ObjInOpenSpace = ObjInOpenSpace;
@@ -179,27 +181,36 @@ var Itsis;
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
             this.game.plugins.add(isoPlugin);
             this.game.iso.anchor.setTo(0.5, 0.2);
-            this.game.load.image('cube', 'assets/scenery/cube.png');
-            this.level1JSON = this.game.cache.getJSON('level_1');
-            var floorTileName = this.level1JSON.floor.tileName;
-            this.game.load.image(floorTileName, 'assets/scenery/' + floorTileName + '.png');
+            this.levelJSON = this.game.cache.getJSON('level');
+            this.sceneryJSON = this.game.cache.getJSON('scenery');
+            this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
+            for (var cptObj = 0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length; cptObj++) {
+                var idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+                for (var scen in this.sceneryJSON) {
+                    if (scen.toString() == idObj) {
+                        var urlObj = this.sceneryJSON[scen][0].url;
+                    }
+                    ;
+                }
+                this.game.load.image(idObj, 'assets/scenery/' + urlObj);
+            }
         };
         Jeu.prototype.create = function () {
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
-            this.spawnCube();
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
+            this.spawnTilesFloor(this.levelJSON.openSpace.sizex, this.levelJSON.openSpace.sizey);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
             cube.anchor.set(0.5);
         };
-        Jeu.prototype.spawnTilesFloor = function (taille) {
-            taille *= 38;
+        Jeu.prototype.spawnTilesFloor = function (sizeX, sizeY) {
+            sizeX *= 38;
+            sizeY *= 38;
             var tileFloor;
-            for (var xx = 0; xx < taille; xx += 38) {
-                for (var yy = 0; yy < taille; yy += 38) {
-                    tileFloor = this.game.add.isoSprite(xx, yy, 0, this.level1JSON.floor.tileName, 0, this.floorGroup);
+            for (var xx = 0; xx < sizeX; xx += 38) {
+                for (var yy = 0; yy < sizeY; yy += 38) {
+                    tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                     tileFloor.anchor.set(0.5, 0);
                 }
             }
@@ -219,7 +230,8 @@ var Itsis;
             _super.apply(this, arguments);
         }
         Loaderjeu.prototype.preload = function () {
-            this.game.load.json('level_1', 'assets/maps/level_1.json');
+            this.game.load.json('scenery', 'assets/scenery/scenery.json');
+            this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
             this.game.state.start('Jeu', true, false);

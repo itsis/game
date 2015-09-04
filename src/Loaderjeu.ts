@@ -5,15 +5,17 @@ module Itsis {
 
         preload() {
 
-            //  Set-up our preloader sprite
-              this.game.load.json('level_1', 'assets/maps/level_1.json');
+            //Json scenery declaration
+            this.game.load.json('scenery', 'assets/scenery/scenery.json');
+
+            //Json level data
+            this.game.load.json('level', 'assets/maps/level_1.json');
 
         }
 
         create() {
 
-          this.game.state.start('Jeu', true, false);
-
+            this.game.state.start('Jeu', true, false);
 
         }
 
