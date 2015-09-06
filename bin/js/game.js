@@ -217,10 +217,9 @@ var Itsis;
                         newObj.locationX = obj.posx * 38;
                         newObj.locationY = obj.posy * 38;
                         newObj.spriteType = objScenery.spritetype;
-                        console.debug('sprittype : ' + newObj.spriteType);
+                        newObj.orientation = objScenery.orientation;
                         if (newObj.spriteType == "spritesheet") {
                             newObj.frame = objScenery.frame;
-                            console.debug(newObj.frame);
                         }
                         else {
                             newObj.frame = 0;

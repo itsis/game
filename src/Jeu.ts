@@ -68,6 +68,7 @@ module Itsis {
                         newObj.locationX = obj.posx*38;
                         newObj.locationY = obj.posy*38;
                         newObj.spriteType = objScenery.spritetype;
+                        newObj.orientation = objScenery.orientation;
                         if (newObj.spriteType == "spritesheet"){
                             newObj.frame = objScenery.frame;
                         }else{
