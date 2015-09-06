@@ -7,6 +7,7 @@ module Itsis {
         floorGroup: Phaser.Group;
         cubeGroup: Phaser.Group;
         decorGroup: Phaser.Group;
+        persoGroup : Phaser.Group;
         cursorPos: Phaser.Plugin.Isometric.Point3;
         text : Phaser.Text;
         level1JSON;
@@ -20,6 +21,7 @@ module Itsis {
           // Add and enable the plug-in.
           var isoPlugin = new Phaser.Plugin.Isometric(this.game);
           this.game.plugins.add(isoPlugin);
+          this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
           this.game.iso.anchor.setTo(0.5, 0.2);
 
           // Load Level assets list
@@ -30,10 +32,12 @@ module Itsis {
 
           this.level1JSON = this.game.cache.getJSON('level_1');
 
-
+          // console.log(this.level1JSON);
           var floorTileName = this.level1JSON.floor.tileName;
+          // console.log(floorTileName);
            this.game.load.image(floorTileName, 'assets/scenery/'+floorTileName+'.png');
            this.load.spritesheet('perso', 'assets/characters/perso.png',64,64,16);
+
         }
 
 
@@ -49,13 +53,24 @@ module Itsis {
             // Create a group for our tiles.
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
+            this.persoGroup = this.game.add.group();
             // Let's make a load of tiles on a grid.
 
 
             this.spawnTilesFloor(this.level1JSON.floor.levelSize);
             this.spawnCube();
             let tempChar = new CharacterOS();
-            tempChar.sprite = this.game.add.sprite(280,380,"perso");
+            // tempChar.sprite = this.game.add.sprite(280,380,"perso");
+            let entree=null;
+            for (let it in ObjInOpenSpace.listOfObj){
+              if(ObjInOpenSpace.listOfObj[it].typeItem == "entree"){
+                entree = ObjInOpenSpace.listOfObj[it];
+              }
+            }
+            // console.log(entree);
+            tempChar.sprite = this.game.add.isoSprite(entree.sprite.isoX, entree.sprite.isoY, 0, 'perso', 0, this.persoGroup);
+            tempChar.sprite.anchor.set(0.5);
+            // console.log(tempChar.sprite);
             tempChar.sprite.frame = 0;
             tempChar.sprite.animations.add("down",[0,1,2,3],10,true);
             tempChar.sprite.animations.add("left",[4,5,6,7],10,true);
@@ -63,6 +78,8 @@ module Itsis {
             tempChar.sprite.animations.add("up",[12,13,14,15],10,true);
 
             tempChar.sprite.visible=false;
+            this.game.physics.isoArcade.enable(tempChar.sprite);
+            // this.game.physics.isoArcade.
 
         }
 
@@ -78,7 +95,7 @@ module Itsis {
           tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
           tempObjEntree.sprite.anchor.set(0.5,0);
           tempObjEntree.typeItem = "entree";
-          // console.log(tmpdesk);
+          // console.log(tempObjEntree);
 
         }
 

@@ -83,6 +83,7 @@ var Itsis;
             this.endurance = this.enduranceMax;
             this.productivity = 100;
             this.motivation = 70;
+            this.speed = 100;
             CharacterOS.listOfCharacter.push(this);
         }
         ;
@@ -96,44 +97,55 @@ var Itsis;
             return objToReturn;
         };
         CharacterOS.prototype.goToLocation = function (location) {
-            var posx = location.sprite.position.x;
-            var posy = location.sprite.position.y;
+            var posx = location.sprite.isoX;
+            var posy = location.sprite.isoY;
             var width = location.sprite.width / 2;
-            if ((posx - width - this.sprite.position.x) > 5 || (posx - width - this.sprite.position.x) < -5) {
-                if ((posx - width) > this.sprite.position.x) {
-                    this.sprite.position.x = this.sprite.position.x + 5;
+            if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
+                if ((posx - width) > this.sprite.isoX) {
+                    this.sprite.body.velocity.x = this.speed;
+                    this.sprite.body.velocity.y = 0;
                     if (this.sprite.animations.name != "right") {
                         this.sprite.animations.play("right");
                     }
                 }
                 else {
-                    this.sprite.position.x = this.sprite.position.x - 5;
+                    this.sprite.body.velocity.x = -this.speed;
+                    this.sprite.body.velocity.y = 0;
                     if (this.sprite.animations.name != "left") {
                         this.sprite.animations.play("left");
                     }
                 }
             }
             else {
-                if ((posy - this.sprite.position.y) > 20 || (posy - this.sprite.position.y) < -20) {
-                    if (posy > this.sprite.position.y) {
-                        this.sprite.position.y = this.sprite.position.y + 5;
+                if ((posy - this.sprite.isoY) > 25 || (posy - this.sprite.isoY) < -25) {
+                    if (posy > this.sprite.isoY) {
+                        this.sprite.body.velocity.y = this.speed;
+                        this.sprite.body.velocity.x = 0;
                         if (this.sprite.animations.name != "down") {
                             this.sprite.animations.play("down");
                         }
                     }
                     else {
-                        this.sprite.position.y = this.sprite.position.y - 5;
+                        this.sprite.body.velocity.y = -this.speed;
+                        this.sprite.body.velocity.x = 0;
                         if (this.sprite.animations.name != "up") {
                             this.sprite.animations.play("up");
                         }
                     }
                 }
                 else {
+                    this.sprite.body.velocity.x = 0;
+                    this.sprite.body.velocity.y = 0;
                     this.sprite.animations.stop();
                     return true;
                 }
             }
             return false;
+        };
+        CharacterOS.prototype.goToLocation2 = function (location) {
+            if (this.sprite.isoX > location.sprite.isoX) {
+                this.sprite.body.velocity.y = -100;
+            }
         };
         CharacterOS.prototype.updateAtHome = function (timeInOpenSpace) {
             if (timeInOpenSpace > this.startingHour && timeInOpenSpace < this.endingHour) {
@@ -142,8 +154,8 @@ var Itsis;
                 }
                 if (this.entree != null) {
                     this.sprite.visible = true;
-                    this.sprite.x = this.entree.sprite.x;
-                    this.sprite.y = this.entree.sprite.y;
+                    this.sprite.x = this.entree.sprite.isoX;
+                    this.sprite.y = this.entree.sprite.isoY;
                     this.state = State.goToDesk;
                 }
             }
@@ -257,6 +269,7 @@ var Itsis;
             this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
             this.game.plugins.add(isoPlugin);
+            this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
             this.game.iso.anchor.setTo(0.5, 0.2);
             this.game.load.image('cube', 'assets/scenery/cube.png');
             this.game.load.image('desk', 'assets/scenery/deskcomp.png');
@@ -273,16 +286,25 @@ var Itsis;
             this.text = this.game.add.text(0, 0, "hello", style);
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
+            this.persoGroup = this.game.add.group();
             this.spawnTilesFloor(this.level1JSON.floor.levelSize);
             this.spawnCube();
             var tempChar = new Itsis.CharacterOS();
-            tempChar.sprite = this.game.add.sprite(280, 380, "perso");
+            var entree = null;
+            for (var it in Itsis.ObjInOpenSpace.listOfObj) {
+                if (Itsis.ObjInOpenSpace.listOfObj[it].typeItem == "entree") {
+                    entree = Itsis.ObjInOpenSpace.listOfObj[it];
+                }
+            }
+            tempChar.sprite = this.game.add.isoSprite(entree.sprite.isoX, entree.sprite.isoY, 0, 'perso', 0, this.persoGroup);
+            tempChar.sprite.anchor.set(0.5);
             tempChar.sprite.frame = 0;
             tempChar.sprite.animations.add("down", [0, 1, 2, 3], 10, true);
             tempChar.sprite.animations.add("left", [4, 5, 6, 7], 10, true);
             tempChar.sprite.animations.add("right", [8, 9, 10, 11], 10, true);
             tempChar.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
             tempChar.sprite.visible = false;
+            this.game.physics.isoArcade.enable(tempChar.sprite);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);

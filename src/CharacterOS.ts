@@ -20,6 +20,7 @@ module Itsis{
 		productivity : number; // base 100
 		motivation : number; // base 100
 		state : number;
+		speed : number ;
 		desk : ObjInOpenSpace = null;
 		entree : ObjInOpenSpace = null;
 
@@ -32,6 +33,7 @@ module Itsis{
 			this.endurance = this.enduranceMax;
 			this.productivity = 100;
 			this.motivation = 70;
+			this.speed = 100;
 			// console
 			CharacterOS.listOfCharacter.push(this);
 		};
@@ -47,36 +49,53 @@ module Itsis{
 		}
 
 		goToLocation(location : ObjInOpenSpace){
-			let posx=location.sprite.position.x;
-			let posy=location.sprite.position.y;
+			let posx=location.sprite.isoX;
+			let posy=location.sprite.isoY;
 			let width=location.sprite.width/2;
 
-			if ((posx-width-this.sprite.position.x)>5 || (posx-width-this.sprite.position.x)<-5){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
-				if ((posx-width)>this.sprite.position.x){
-					this.sprite.position.x=this.sprite.position.x+5;
+			if ((posx-width-this.sprite.isoX)>25 || (posx-width-this.sprite.isoX)<-25){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
+				if ((posx-width)>this.sprite.isoX){
+					// this.sprite.position.x=this.sprite.position.x+5;
+					this.sprite.body.velocity.x = this.speed;
+					this.sprite.body.velocity.y = 0;
 					if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
 
 				}else{
-					this.sprite.position.x=this.sprite.position.x-5;
+					this.sprite.body.velocity.x = -this.speed;
+					this.sprite.body.velocity.y = 0;
 					if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
 				}
 			}else{
-				if ((posy-this.sprite.position.y)>20 || (posy-this.sprite.position.y)<-20){
+				if ((posy-this.sprite.isoY)>25 || (posy-this.sprite.isoY)<-25){
 
-					if (posy>this.sprite.position.y){
-						this.sprite.position.y=this.sprite.position.y+5;
+					if (posy>this.sprite.isoY){
+						this.sprite.body.velocity.y = this.speed;
+						this.sprite.body.velocity.x = 0;
 						if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
 					}else{
-						this.sprite.position.y=this.sprite.position.y-5;
+						this.sprite.body.velocity.y = -this.speed;
+						this.sprite.body.velocity.x = 0;
 						if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
 					}
 				}else{
+					this.sprite.body.velocity.x =0;
+					this.sprite.body.velocity.y =0;
 					this.sprite.animations.stop();
 					return true;
 				}
 			}
+			// console.log(this.sprite.body.velocity.x + "#" + this.sprite.body.velocity.y);
+			// console.log(posx + " x#x " + this.sprite.isoX);
+			// console.log(posy + " y#y " + this.sprite.isoY);
 			return false;
 
+		}
+
+		goToLocation2(location : ObjInOpenSpace){
+			if (this.sprite.isoX> location.sprite.isoX){
+				this.sprite.body.velocity.y = -100;
+
+			}
 		}
 
 		updateAtHome(timeInOpenSpace : number){
@@ -87,8 +106,9 @@ module Itsis{
 				}
 				if (this.entree != null){
 					this.sprite.visible=true;
-					this.sprite.x = this.entree.sprite.x;
-					this.sprite.y = this.entree.sprite.y;
+					this.sprite.x = this.entree.sprite.isoX;
+					this.sprite.y = this.entree.sprite.isoY;
+					// console.log(this.sprite);
 					this.state=State.goToDesk;
 				}
 			}
