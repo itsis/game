@@ -184,21 +184,55 @@ var Itsis;
             this.levelJSON = this.game.cache.getJSON('level');
             this.sceneryJSON = this.game.cache.getJSON('scenery');
             this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
-            for (var cptObj = 0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length; cptObj++) {
-                var idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+            for (var _i = 0, _a = this.levelJSON.openSpace.objInOpenSpace; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                var idObj = obj.id;
                 for (var scen in this.sceneryJSON) {
                     if (scen.toString() == idObj) {
-                        var urlObj = this.sceneryJSON[scen][0].url;
+                        var sceneryInfo = this.sceneryJSON[scen][0];
+                        var urlObj = 'assets/scenery/' + sceneryInfo.url;
+                        if (sceneryInfo.spritetype == "spritesheet") {
+                            this.game.load.spritesheet(idObj, urlObj, sceneryInfo.width, sceneryInfo.height);
+                        }
+                        else {
+                            this.game.load.image(idObj, urlObj);
+                        }
                     }
-                    ;
                 }
-                this.game.load.image(idObj, 'assets/scenery/' + urlObj);
             }
         };
         Jeu.prototype.create = function () {
             this.floorGroup = this.game.add.group();
             this.decorGroup = this.game.add.group();
             this.spawnTilesFloor(this.levelJSON.openSpace.sizex, this.levelJSON.openSpace.sizey);
+            for (var _i = 0, _a = this.levelJSON.openSpace.objInOpenSpace; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                var idObj = obj.id;
+                for (var scen in this.sceneryJSON) {
+                    if (scen.toString() == idObj) {
+                        var newObj = new Itsis.ObjInOpenSpace();
+                        var objScenery = this.sceneryJSON[scen][0];
+                        newObj.typeItem = objScenery.type;
+                        newObj.id = idObj;
+                        newObj.locationX = obj.posx * 38;
+                        newObj.locationY = obj.posy * 38;
+                        newObj.spriteType = objScenery.spritetype;
+                        console.debug('sprittype : ' + newObj.spriteType);
+                        if (newObj.spriteType == "spritesheet") {
+                            newObj.frame = objScenery.frame;
+                            console.debug(newObj.frame);
+                        }
+                        else {
+                            newObj.frame = 0;
+                        }
+                    }
+                }
+            }
+            for (var _b = 0, _c = Itsis.ObjInOpenSpace.listOfObj; _b < _c.length; _b++) {
+                var objToOpenspace = _c[_b];
+                objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+                objToOpenspace.sprite.anchor.set(0.5, 0);
+            }
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);

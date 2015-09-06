@@ -25,18 +25,24 @@ module Itsis {
             // Load floor
           this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
             // Load assets
-          for (let cptObj=0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length ; cptObj++){
-              let idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+              // Retrieve image and image type
+          for (let obj of this.levelJSON.openSpace.objInOpenSpace){
+              let idObj = obj.id;
               for (let scen in this.sceneryJSON){
                   if (scen.toString() == idObj){
-                    var urlObj = this.sceneryJSON[scen][0].url;
-                  };
+                      let sceneryInfo = this.sceneryJSON[scen][0];
+                      let urlObj = 'assets/scenery/' + sceneryInfo.url;
+                      // Load image according to image typpe
+                      if (sceneryInfo.spritetype == "spritesheet"){
+                        // Case Spritesheet
+                          this.game.load.spritesheet(idObj, urlObj, sceneryInfo.width, sceneryInfo.height);
+                      }else{
+                        // Case single image
+                          this.game.load.image(idObj, urlObj);
+                      }
+                  }
               }
-              this.game.load.image(idObj, 'assets/scenery/' + urlObj);
-
           }
-
-
 
         }
 
@@ -49,15 +55,32 @@ module Itsis {
             // Floor building
             this.spawnTilesFloor(this.levelJSON.openSpace.sizex, this.levelJSON.openSpace.sizey);
 
-            // Sprite in openspace creation
-            for (let cptObj=0; cptObj < this.levelJSON.openSpace.objInOpenSpace.length ; cptObj++){
-                let idObj = this.levelJSON.openSpace.objInOpenSpace[cptObj].id;
+            // Sprite in openspace
+              // Creation
+            for (let obj of this.levelJSON.openSpace.objInOpenSpace){
+                let idObj = obj.id;
                 for (let scen in this.sceneryJSON){
                     if (scen.toString() == idObj){
                         let newObj = new ObjInOpenSpace();
-                        newObj.typeItem = this.sceneryJSON[scen][0].type;
-                    };
+                        let objScenery = this.sceneryJSON[scen][0];
+                        newObj.typeItem = objScenery.type;
+                        newObj.id = idObj;
+                        newObj.locationX = obj.posx*38;
+                        newObj.locationY = obj.posy*38;
+                        newObj.spriteType = objScenery.spritetype;
+                        if (newObj.spriteType == "spritesheet"){
+                            newObj.frame = objScenery.frame;
+                        }else{
+                            newObj.frame = 0;
+                        }
+                    }
                 }
+            }
+
+            // Drawing
+            for (let objToOpenspace of ObjInOpenSpace.listOfObj){
+                objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+                objToOpenspace.sprite.anchor.set(0.5, 0);
             }
 
         }
