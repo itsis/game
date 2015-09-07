@@ -1,10 +1,38 @@
 {
-
-    "usable":{
-        "desk_1"
-    },
-
-    "decor":{
-        "tile_floor"
-    }
-}
+    "desk_face_left":[{
+        "type":"desk",
+        "url":"desk.png",
+        "spritetype":"spritesheet",
+        "width":75,
+        "height":98,
+        "frame":0,
+        "rotate":0,
+        "orientation":"s",
+        "motivation":"+1",
+        "price":"350"
+      }],
+    "desk_back_left":[{
+        "type":"desk",
+        "url":"desk.png",
+        "spritetype":"spritesheet",
+        "width":75,
+        "height":98,
+        "frame":1,
+        "rotate":0,
+        "orientation":"w",
+        "motivation":"+1",
+        "price":"350"
+    }],
+    "desk_back_right":[{
+        "type":"desk",
+        "url":"desk.png",
+        "spritetype":"spritesheet",
+        "width":75,
+        "height":98,
+        "frame":2,
+        "rotate":0,
+        "orientation":"w",
+        "motivation":"+1",
+        "price":"350"
+    }]
+ }
