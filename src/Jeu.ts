@@ -1,4 +1,5 @@
 /// <reference path="../tsDefinitions/phaser.plugin.isometric.d.ts" />
+/// <reference path="../tsDefinitions/astar.js" />
 
 module Itsis {
 
@@ -13,6 +14,9 @@ module Itsis {
         level1JSON;
         actualDate : number;
         lastTicksHour : number;
+        mapOpenSpace : number[][];
+        star : Object;
+        timeStep : number = 400;
 
 
 
@@ -79,7 +83,26 @@ module Itsis {
 
             tempChar.sprite.visible=false;
             this.game.physics.isoArcade.enable(tempChar.sprite);
-            // this.game.physics.isoArcade.
+
+            this.mapOpenSpace =[this.level1JSON.floor.levelSize];
+            for (let x=0; x < this.level1JSON.floor.levelSize;x++){
+              this.mapOpenSpace[x] = [this.level1JSON.floor.levelSize];
+              }
+
+
+            for (let x=0; x < this.level1JSON.floor.levelSize;x++){
+              for (let y = 0; y< this.level1JSON.floor.levelSize;y++){
+                this.mapOpenSpace[x][y]=1;
+              }
+            }
+            for (let it in ObjInOpenSpace.listOfObj){
+              let o = ObjInOpenSpace.listOfObj[it];
+              let isoX = o.sprite.isoX / 38;
+              let isoY = o.sprite.isoY / 38;
+              this.mapOpenSpace[isoX][isoY] = 0;
+            }
+
+            this.star = new Graph(this.mapOpenSpace);
 
         }
 
@@ -91,6 +114,10 @@ module Itsis {
           let tempObjDesk = new ObjInOpenSpace();
           tempObjDesk.sprite = tmpdesk;
           tempObjDesk.typeItem = "desk";
+          let tmpdesk2 = this.game.add.isoSprite(380,0,0,'desk',0,this.decorGroup);
+          tmpdesk2.anchor.set(0.5);
+          let tempObjDesk2 = new ObjInOpenSpace();
+          tempObjDesk2.sprite = tmpdesk2;
           let tempObjEntree = new ObjInOpenSpace();
           tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
           tempObjEntree.sprite.anchor.set(0.5,0);
@@ -100,6 +127,7 @@ module Itsis {
         }
 
         spawnTilesFloor(taille: number) {
+
             taille *= 38;
 
             var tileFloor;
@@ -109,6 +137,7 @@ module Itsis {
                    tileFloor.anchor.set(0.5, 0);
                 }
             }
+
         }
 
         startMainMenu(){
@@ -130,19 +159,34 @@ module Itsis {
             this.lastTicksHour = this.game.time.time;
             tempHour = parseInt(this.actualDate);
             tempMin = parseInt((this.actualDate-tempHour) * 100);
-            this.text.setText(((tempHour>10?tempHour:"0" + tempHour) + ":" + (tempMin>10?tempMin:"0"+tempMin);
+            this.text.setText(((tempHour>10?tempHour:"0" + tempHour) + ":" + (tempMin>10?tempMin:"0"+tempMin)));
           }
         }
 
         render(){
           this.formatHour();
+
           for (let itChar in CharacterOS.listOfCharacter){
-            tempChar = CharacterOS.listOfCharacter[itChar];
+            let tempChar = CharacterOS.listOfCharacter[itChar];
 
-            tempChar.update(this.actualDate);
+            // console.log()
+            if (tempChar.locationToGo !=null){
+              if (tempChar.path == null){
+                let isoX = tempChar.sprite.isoX / 38;
+                let isoY = tempChar.sprite.isoY / 38;
+                let destX = tempChar.locationToGo.x /38;
+                let destY = tempChar.locationToGo.y / 38;
+
+                let start = this.star.grid[isoX][isoY];
+                let end = this.star.grid[destX][destY-1];
+                let result = astar.search(this.star,start,end);
+                tempChar.path = result;
+                // console.log(result);
+              }
           }
+          tempChar.update(this.actualDate);
         }
+      }
 
-    }
-
+  }
 }

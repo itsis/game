@@ -70,12 +70,18 @@ var Itsis;
     })(Itsis.State || (Itsis.State = {}));
     var State = Itsis.State;
     ;
+    var LocationToGo = (function () {
+        function LocationToGo() {
+        }
+        return LocationToGo;
+    })();
     var CharacterOS = (function (_super) {
         __extends(CharacterOS, _super);
         function CharacterOS() {
             _super.call(this);
             this.desk = null;
             this.entree = null;
+            this.path = null;
             this.state = State.home;
             this.startingHour = 8;
             this.endingHour = 9;
@@ -84,6 +90,7 @@ var Itsis;
             this.productivity = 100;
             this.motivation = 70;
             this.speed = 100;
+            this.locationToGo = null;
             CharacterOS.listOfCharacter.push(this);
         }
         ;
@@ -97,9 +104,9 @@ var Itsis;
             return objToReturn;
         };
         CharacterOS.prototype.goToLocation = function (location) {
-            var posx = location.sprite.isoX;
-            var posy = location.sprite.isoY;
-            var width = location.sprite.width / 2;
+            var posx = this.locationToGo.x;
+            var posy = this.locationToGo.x;
+            var width = this.locationToGo.width / 2;
             if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
                 if ((posx - width) > this.sprite.isoX) {
                     this.sprite.body.velocity.x = this.speed;
@@ -137,14 +144,57 @@ var Itsis;
                     this.sprite.body.velocity.x = 0;
                     this.sprite.body.velocity.y = 0;
                     this.sprite.animations.stop();
+                    this.locationToGo = null;
                     return true;
                 }
             }
             return false;
         };
-        CharacterOS.prototype.goToLocation2 = function (location) {
-            if (this.sprite.isoX > location.sprite.isoX) {
-                this.sprite.body.velocity.y = -100;
+        CharacterOS.prototype.moveOnPath = function () {
+            var posx = this.path[0].x * 38;
+            var posy = this.path[0].y * 38;
+            var width = this.locationToGo.width / 2;
+            if (this.path.length > 0) {
+                if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
+                    if ((posx - width) > this.sprite.isoX) {
+                        this.sprite.body.velocity.x = this.speed;
+                        this.sprite.body.velocity.y = 0;
+                        if (this.sprite.animations.name != "right") {
+                            this.sprite.animations.play("right");
+                        }
+                    }
+                    else {
+                        this.sprite.body.velocity.x = -this.speed;
+                        this.sprite.body.velocity.y = 0;
+                        if (this.sprite.animations.name != "left") {
+                            this.sprite.animations.play("left");
+                        }
+                    }
+                }
+                else {
+                    if ((posy - this.sprite.isoY) > 25 || (posy - this.sprite.isoY) < -25) {
+                        if (posy > this.sprite.isoY) {
+                            this.sprite.body.velocity.y = this.speed;
+                            this.sprite.body.velocity.x = 0;
+                            if (this.sprite.animations.name != "down") {
+                                this.sprite.animations.play("down");
+                            }
+                        }
+                        else {
+                            this.sprite.body.velocity.y = -this.speed;
+                            this.sprite.body.velocity.x = 0;
+                            if (this.sprite.animations.name != "up") {
+                                this.sprite.animations.play("up");
+                            }
+                        }
+                    }
+                    else {
+                        this.sprite.body.velocity.x = 0;
+                        this.sprite.body.velocity.y = 0;
+                        this.sprite.animations.stop();
+                        this.path.shift();
+                    }
+                }
             }
         };
         CharacterOS.prototype.updateAtHome = function (timeInOpenSpace) {
@@ -166,9 +216,19 @@ var Itsis;
                 this.desk = this.findObjInOS("desk");
             }
             if (this.desk != null) {
-                var ret = this.goToLocation(this.desk);
-                if (ret)
+                if (this.locationToGo == null) {
+                    this.locationToGo = new LocationToGo();
+                    this.locationToGo.x = this.desk.sprite.isoX;
+                    this.locationToGo.y = this.desk.sprite.isoY;
+                    this.locationToGo.width = this.desk.sprite.width;
+                }
+            }
+            if (this.path != null) {
+                this.moveOnPath();
+                if (this.path.length == 0) {
                     this.state = State.working;
+                    this.path = null;
+                }
             }
         };
         CharacterOS.prototype.updateWorking = function (timeInOpenSpace) {
@@ -258,12 +318,14 @@ var Itsis;
     Itsis.ItsisGame = ItsisGame;
 })(Itsis || (Itsis = {}));
 /// <reference path="../tsDefinitions/phaser.plugin.isometric.d.ts" />
+/// <reference path="../tsDefinitions/astar.js" />
 var Itsis;
 (function (Itsis) {
     var Jeu = (function (_super) {
         __extends(Jeu, _super);
         function Jeu() {
             _super.apply(this, arguments);
+            this.timeStep = 400;
         }
         Jeu.prototype.preload = function () {
             this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
@@ -305,6 +367,22 @@ var Itsis;
             tempChar.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
             tempChar.sprite.visible = false;
             this.game.physics.isoArcade.enable(tempChar.sprite);
+            this.mapOpenSpace = [this.level1JSON.floor.levelSize];
+            for (var x = 0; x < this.level1JSON.floor.levelSize; x++) {
+                this.mapOpenSpace[x] = [this.level1JSON.floor.levelSize];
+            }
+            for (var x = 0; x < this.level1JSON.floor.levelSize; x++) {
+                for (var y = 0; y < this.level1JSON.floor.levelSize; y++) {
+                    this.mapOpenSpace[x][y] = 1;
+                }
+            }
+            for (var it in Itsis.ObjInOpenSpace.listOfObj) {
+                var o = Itsis.ObjInOpenSpace.listOfObj[it];
+                var isoX = o.sprite.isoX / 38;
+                var isoY = o.sprite.isoY / 38;
+                this.mapOpenSpace[isoX][isoY] = 0;
+            }
+            this.star = new Graph(this.mapOpenSpace);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
@@ -314,6 +392,10 @@ var Itsis;
             var tempObjDesk = new Itsis.ObjInOpenSpace();
             tempObjDesk.sprite = tmpdesk;
             tempObjDesk.typeItem = "desk";
+            var tmpdesk2 = this.game.add.isoSprite(380, 0, 0, 'desk', 0, this.decorGroup);
+            tmpdesk2.anchor.set(0.5);
+            var tempObjDesk2 = new Itsis.ObjInOpenSpace();
+            tempObjDesk2.sprite = tmpdesk2;
             var tempObjEntree = new Itsis.ObjInOpenSpace();
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5, 0);
@@ -352,7 +434,19 @@ var Itsis;
         Jeu.prototype.render = function () {
             this.formatHour();
             for (var itChar in Itsis.CharacterOS.listOfCharacter) {
-                tempChar = Itsis.CharacterOS.listOfCharacter[itChar];
+                var tempChar = Itsis.CharacterOS.listOfCharacter[itChar];
+                if (tempChar.locationToGo != null) {
+                    if (tempChar.path == null) {
+                        var isoX = tempChar.sprite.isoX / 38;
+                        var isoY = tempChar.sprite.isoY / 38;
+                        var destX = tempChar.locationToGo.x / 38;
+                        var destY = tempChar.locationToGo.y / 38;
+                        var start = this.star.grid[isoX][isoY];
+                        var end = this.star.grid[destX][destY - 1];
+                        var result = astar.search(this.star, start, end);
+                        tempChar.path = result;
+                    }
+                }
                 tempChar.update(this.actualDate);
             }
         };
