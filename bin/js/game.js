@@ -58,6 +58,7 @@ var Itsis;
     Itsis.ObjInOpenSpace = ObjInOpenSpace;
 })(Itsis || (Itsis = {}));
 /// <reference path="./ObjInOpenSpace.ts"/>
+/// <reference path="../tsDefinitions/astar.js" />
 var Itsis;
 (function (Itsis) {
     (function (State) {
@@ -89,7 +90,7 @@ var Itsis;
             this.endurance = this.enduranceMax;
             this.productivity = 100;
             this.motivation = 70;
-            this.speed = 100;
+            this.speed = 200;
             this.locationToGo = null;
             CharacterOS.listOfCharacter.push(this);
         }
@@ -151,10 +152,11 @@ var Itsis;
             return false;
         };
         CharacterOS.prototype.moveOnPath = function () {
-            var posx = this.path[0].x * 38;
-            var posy = this.path[0].y * 38;
-            var width = this.locationToGo.width / 2;
             if (this.path.length > 0) {
+                var posx = this.path[0].x * 38;
+                var posy = this.path[0].y * 38;
+                console.log(this.path[0]);
+                var width = this.locationToGo.width / 2;
                 if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
                     if ((posx - width) > this.sprite.isoX) {
                         this.sprite.body.velocity.x = this.speed;
@@ -189,10 +191,17 @@ var Itsis;
                         }
                     }
                     else {
-                        this.sprite.body.velocity.x = 0;
-                        this.sprite.body.velocity.y = 0;
-                        this.sprite.animations.stop();
                         this.path.shift();
+                        if (this.path.length == 0) {
+                            this.sprite.body.velocity.x = 0;
+                            this.sprite.body.velocity.y = 0;
+                            switch (this.locationToGo.orientation) {
+                                case "w":
+                                    this.sprite.animations.play("right");
+                                    break;
+                            }
+                            this.sprite.animations.stop();
+                        }
                     }
                 }
             }
@@ -211,7 +220,7 @@ var Itsis;
             }
         };
         ;
-        CharacterOS.prototype.updateGoToDesk = function () {
+        CharacterOS.prototype.updateGoToDesk = function (openSpace) {
             if (this.desk == null) {
                 this.desk = this.findObjInOS("desk");
             }
@@ -221,13 +230,45 @@ var Itsis;
                     this.locationToGo.x = this.desk.sprite.isoX;
                     this.locationToGo.y = this.desk.sprite.isoY;
                     this.locationToGo.width = this.desk.sprite.width;
+                    this.locationToGo.orientation = this.desk.orientation;
                 }
+            }
+            if (this.path == null) {
+                console.log(this.desk);
+                console.log(this.locationToGo);
+                graph = new Graph(openSpace);
+                var isoX = Math.round(this.sprite.isoX / 38);
+                var isoY = Math.round(this.sprite.isoY / 38);
+                var destX = Math.round(this.locationToGo.x / 38);
+                var destY = Math.round(this.locationToGo.y / 38);
+                var step = 1 + Math.round(this.locationToGo.width / 2) / 38;
+                console.log("step" + step);
+                switch (this.desk.orientation) {
+                    case "s":
+                        destX += 1;
+                        break;
+                    case "w":
+                        destY += 1;
+                        break;
+                    case "n":
+                        destX -= 1;
+                        break;
+                    case "e":
+                        destY -= 1;
+                        break;
+                }
+                var start = graph.grid[isoX][isoY];
+                var end = graph.grid[destX][destY];
+                this.path = astar.search(graph, start, end);
+                console.log(isoX + "/" + isoY + "/" + destX + "/" + destY);
+                console.log(this.path);
             }
             if (this.path != null) {
                 this.moveOnPath();
                 if (this.path.length == 0) {
                     this.state = State.working;
                     this.path = null;
+                    this.locationToGo = null;
                 }
             }
         };
@@ -241,20 +282,29 @@ var Itsis;
                 this.entree = this.findObjInOS("entree");
             }
             if (this.entree != null) {
-                var ret = this.goToLocation(this.entree);
-                if (ret) {
-                    this.state = State.home;
-                    this.sprite.visible = false;
+                if (this.locationToGo == null) {
+                    this.locationToGo = new LocationToGo();
+                    this.locationToGo.x = this.entree.sprite.isoX;
+                    this.locationToGo.y = this.entree.sprite.isoY;
+                    this.locationToGo.width = this.entree.sprite.width;
+                }
+            }
+            if (this.path != null) {
+                this.moveOnPath();
+                if (this.path.length == 0) {
+                    this.state = State.working;
+                    this.path = null;
+                    this.locationToGo = null;
                 }
             }
         };
-        CharacterOS.prototype.update = function (timeInOpenSpace) {
+        CharacterOS.prototype.update = function (timeInOpenSpace, openSpace) {
             switch (this.state) {
                 case State.home:
                     this.updateAtHome(timeInOpenSpace);
                     break;
                 case State.goToDesk:
-                    this.updateGoToDesk();
+                    this.updateGoToDesk(openSpace);
                     break;
                 case State.working:
                     this.updateWorking(timeInOpenSpace);
@@ -317,48 +367,81 @@ var Itsis;
     })(Phaser.Game);
     Itsis.ItsisGame = ItsisGame;
 })(Itsis || (Itsis = {}));
-/// <reference path="../tsDefinitions/phaser.plugin.isometric.d.ts" />
-/// <reference path="../tsDefinitions/astar.js" />
 var Itsis;
 (function (Itsis) {
     var Jeu = (function (_super) {
         __extends(Jeu, _super);
         function Jeu() {
             _super.apply(this, arguments);
-            this.timeStep = 400;
         }
         Jeu.prototype.preload = function () {
-            this.game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
             this.game.plugins.add(isoPlugin);
-            this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
             this.game.iso.anchor.setTo(0.5, 0.2);
-            this.game.load.image('cube', 'assets/scenery/cube.png');
-            this.game.load.image('desk', 'assets/scenery/deskcomp.png');
+            this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
+            this.levelJSON = this.game.cache.getJSON('level');
+            this.sceneryJSON = this.game.cache.getJSON('scenery');
+            this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
             this.game.load.image('entree', 'assets/scenery/tile_entree.png');
-            this.level1JSON = this.game.cache.getJSON('level_1');
-            var floorTileName = this.level1JSON.floor.tileName;
-            this.game.load.image(floorTileName, 'assets/scenery/' + floorTileName + '.png');
             this.load.spritesheet('perso', 'assets/characters/perso.png', 64, 64, 16);
-        };
-        Jeu.prototype.create = function () {
-            this.lastTicksHour = this.game.time.time;
-            this.actualDate = 7.00;
-            var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, align: "center" };
-            this.text = this.game.add.text(0, 0, "hello", style);
-            this.floorGroup = this.game.add.group();
-            this.decorGroup = this.game.add.group();
-            this.persoGroup = this.game.add.group();
-            this.spawnTilesFloor(this.level1JSON.floor.levelSize);
-            this.spawnCube();
-            var tempChar = new Itsis.CharacterOS();
-            var entree = null;
-            for (var it in Itsis.ObjInOpenSpace.listOfObj) {
-                if (Itsis.ObjInOpenSpace.listOfObj[it].typeItem == "entree") {
-                    entree = Itsis.ObjInOpenSpace.listOfObj[it];
+            for (var _i = 0, _a = this.levelJSON.openSpace.objInOpenSpace; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                var idObj = obj.id;
+                for (var scen in this.sceneryJSON) {
+                    if (scen.toString() == idObj) {
+                        var sceneryInfo = this.sceneryJSON[scen][0];
+                        var urlObj = 'assets/scenery/' + sceneryInfo.url;
+                        if (sceneryInfo.spritetype == "spritesheet") {
+                            this.game.load.spritesheet(idObj, urlObj, sceneryInfo.width, sceneryInfo.height);
+                        }
+                        else {
+                            this.game.load.image(idObj, urlObj);
+                        }
+                    }
                 }
             }
-            tempChar.sprite = this.game.add.isoSprite(entree.sprite.isoX, entree.sprite.isoY, 0, 'perso', 0, this.persoGroup);
+        };
+        Jeu.prototype.create = function () {
+            var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, align: "center" };
+            this.text = this.game.add.text(0, 0, "hello", style);
+            this.lastTicksHour = this.game.time.time;
+            this.actualDate = 7.00;
+            this.floorGroup = this.game.add.group();
+            this.decorGroup = this.game.add.group();
+            this.spawnTilesFloor(this.levelJSON.openSpace.sizex, this.levelJSON.openSpace.sizey);
+            for (var _i = 0, _a = this.levelJSON.openSpace.objInOpenSpace; _i < _a.length; _i++) {
+                var obj = _a[_i];
+                var idObj = obj.id;
+                for (var scen in this.sceneryJSON) {
+                    if (scen.toString() == idObj) {
+                        var newObj = new Itsis.ObjInOpenSpace();
+                        var objScenery = this.sceneryJSON[scen][0];
+                        newObj.typeItem = objScenery.type;
+                        newObj.id = idObj;
+                        newObj.locationX = obj.posx * 38;
+                        newObj.locationY = obj.posy * 38;
+                        newObj.spriteType = objScenery.spritetype;
+                        newObj.orientation = objScenery.orientation;
+                        if (newObj.spriteType == "spritesheet") {
+                            newObj.frame = objScenery.frame;
+                        }
+                        else {
+                            newObj.frame = 0;
+                        }
+                    }
+                }
+            }
+            for (var _b = 0, _c = Itsis.ObjInOpenSpace.listOfObj; _b < _c.length; _b++) {
+                var objToOpenspace = _c[_b];
+                objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+                objToOpenspace.sprite.anchor.set(0.5);
+            }
+            var tempObjEntree = new Itsis.ObjInOpenSpace();
+            tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
+            tempObjEntree.sprite.anchor.set(0.5, 0);
+            tempObjEntree.typeItem = "entree";
+            var tempChar = new Itsis.CharacterOS();
+            tempChar.sprite = this.game.add.isoSprite(tempObjEntree.sprite.isoX, tempObjEntree.sprite.isoY, 0, 'perso', 0, this.decorGroup);
             tempChar.sprite.anchor.set(0.5);
             tempChar.sprite.frame = 0;
             tempChar.sprite.animations.add("down", [0, 1, 2, 3], 10, true);
@@ -367,52 +450,55 @@ var Itsis;
             tempChar.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
             tempChar.sprite.visible = false;
             this.game.physics.isoArcade.enable(tempChar.sprite);
-            this.mapOpenSpace = [this.level1JSON.floor.levelSize];
-            for (var x = 0; x < this.level1JSON.floor.levelSize; x++) {
-                this.mapOpenSpace[x] = [this.level1JSON.floor.levelSize];
+            this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
+            for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
+                this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];
             }
-            for (var x = 0; x < this.level1JSON.floor.levelSize; x++) {
-                for (var y = 0; y < this.level1JSON.floor.levelSize; y++) {
+            for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
+                for (var y = 0; y < this.levelJSON.openSpace.sizey; y++) {
                     this.mapOpenSpace[x][y] = 1;
                 }
             }
-            for (var it in Itsis.ObjInOpenSpace.listOfObj) {
-                var o = Itsis.ObjInOpenSpace.listOfObj[it];
-                var isoX = o.sprite.isoX / 38;
-                var isoY = o.sprite.isoY / 38;
-                this.mapOpenSpace[isoX][isoY] = 0;
+            for (var _d = 0, _e = Itsis.ObjInOpenSpace.listOfObj; _d < _e.length; _d++) {
+                var it = _e[_d];
+                var isoX = it.sprite.isoX / 38;
+                var isoY = it.sprite.isoY / 38;
+                if (it.typeItem != "entree") {
+                    if (it.sprite.width > 38) {
+                        switch (it.orientation) {
+                            case "w":
+                                this.mapOpenSpace[isoX - 1][isoY] = 0;
+                                break;
+                            case "e":
+                                this.mapOpenSpace[isoX + 1][isoY] = 0;
+                                break;
+                            case "s":
+                                this.mapOpenSpace[isoX][isoY - 1] = 0;
+                                break;
+                            case "n":
+                                this.mapOpenSpace[isoX][isoY + 1] = 0;
+                                break;
+                        }
+                    }
+                    this.mapOpenSpace[isoX][isoY] = 0;
+                }
             }
-            this.star = new Graph(this.mapOpenSpace);
+            console.log(this.mapOpenSpace);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
             cube.anchor.set(0.5);
-            var tmpdesk = this.game.add.isoSprite(152, 152, 0, 'desk', 0, this.decorGroup);
-            tmpdesk.anchor.set(0.5);
-            var tempObjDesk = new Itsis.ObjInOpenSpace();
-            tempObjDesk.sprite = tmpdesk;
-            tempObjDesk.typeItem = "desk";
-            var tmpdesk2 = this.game.add.isoSprite(380, 0, 0, 'desk', 0, this.decorGroup);
-            tmpdesk2.anchor.set(0.5);
-            var tempObjDesk2 = new Itsis.ObjInOpenSpace();
-            tempObjDesk2.sprite = tmpdesk2;
-            var tempObjEntree = new Itsis.ObjInOpenSpace();
-            tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
-            tempObjEntree.sprite.anchor.set(0.5, 0);
-            tempObjEntree.typeItem = "entree";
         };
-        Jeu.prototype.spawnTilesFloor = function (taille) {
-            taille *= 38;
+        Jeu.prototype.spawnTilesFloor = function (sizeX, sizeY) {
+            sizeX *= 38;
+            sizeY *= 38;
             var tileFloor;
-            for (var xx = 0; xx < taille; xx += 38) {
-                for (var yy = 0; yy < taille; yy += 38) {
-                    tileFloor = this.game.add.isoSprite(xx, yy, 0, this.level1JSON.floor.tileName, 0, this.floorGroup);
+            for (var xx = 0; xx < sizeX; xx += 38) {
+                for (var yy = 0; yy < sizeY; yy += 38) {
+                    tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                     tileFloor.anchor.set(0.5, 0);
                 }
             }
-        };
-        Jeu.prototype.startMainMenu = function () {
-            this.game.state.start("MainMenu", true, false);
         };
         Jeu.prototype.formatHour = function () {
             if ((this.game.time.time - this.lastTicksHour) >= 1000) {
@@ -431,23 +517,14 @@ var Itsis;
                 this.text.setText(((tempHour > 10 ? tempHour : "0" + tempHour) + ":" + (tempMin > 10 ? tempMin : "0" + tempMin)));
             }
         };
+        Jeu.prototype.startMainMenu = function () {
+            this.game.state.start("MainMenu", true, false);
+        };
         Jeu.prototype.render = function () {
             this.formatHour();
-            for (var itChar in Itsis.CharacterOS.listOfCharacter) {
-                var tempChar = Itsis.CharacterOS.listOfCharacter[itChar];
-                if (tempChar.locationToGo != null) {
-                    if (tempChar.path == null) {
-                        var isoX = tempChar.sprite.isoX / 38;
-                        var isoY = tempChar.sprite.isoY / 38;
-                        var destX = tempChar.locationToGo.x / 38;
-                        var destY = tempChar.locationToGo.y / 38;
-                        var start = this.star.grid[isoX][isoY];
-                        var end = this.star.grid[destX][destY - 1];
-                        var result = astar.search(this.star, start, end);
-                        tempChar.path = result;
-                    }
-                }
-                tempChar.update(this.actualDate);
+            for (var _i = 0, _a = Itsis.CharacterOS.listOfCharacter; _i < _a.length; _i++) {
+                var itChar = _a[_i];
+                itChar.update(this.actualDate, this.mapOpenSpace);
             }
         };
         return Jeu;
@@ -462,7 +539,8 @@ var Itsis;
             _super.apply(this, arguments);
         }
         Loaderjeu.prototype.preload = function () {
-            this.game.load.json('level_1', 'assets/maps/level_1.json');
+            this.game.load.json('scenery', 'assets/scenery/scenery.json');
+            this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
             this.game.state.start('Jeu', true, false);

@@ -1,25 +1,27 @@
 {
-
-    "floor":{
-        "tileName":"tile_floor",
-        "levelSize":15
-    },
-
-    "usable":{
-
-        "desk_1":{
-            "location":{
-                "1":{"x":0, "y":0 },
-                "2":{"x":3, "y":1 }
-            }
-        },
-
-        "cube":{
-            "location":{
-                "1":{"x":5, "y":5}
-            }
-        }
-
-    }
+	"openSpace":	{
+			"id":1,
+			"name":"test",
+      "floor":"tile_floor.png",
+			"sizex" : 15,
+			"sizey" : 10,
+			"objInOpenSpace":[
+				{
+					"id":"desk_face_left",
+					"posx" : 1,
+					"posy" : 1
+				},
+				{
+					"id":"desk_back_left",
+					"posx" : 6,
+					"posy" : 1
+				},
+				{
+					"id":"desk_back_right",
+					"posx" : 1,
+					"posy" : 5
+				}
+			]
+		}
 
 }
