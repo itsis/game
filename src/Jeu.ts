@@ -124,7 +124,9 @@ module Itsis {
                 this.mapOpenSpace[x][y]=1;
               }
             }
+
             for (let it of ObjInOpenSpace.listOfObj){
+
               let isoX = it.sprite.isoX / 38;
               let isoY = it.sprite.isoY / 38;
               if (it.typeItem !="entree"){
@@ -150,7 +152,7 @@ module Itsis {
             }
 
 
-          console.log(this.mapOpenSpace);
+          // console.log(this.mapOpenSpace);
         }
 
         spawnCube(){

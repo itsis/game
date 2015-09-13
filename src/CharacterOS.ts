@@ -17,7 +17,7 @@ module Itsis{
 		orientation : string;
 	}
 
-	export class CharacterOS extends ObjInOpenSpace{
+	export class CharacterOS{
 		public static listOfCharacter : CharacterOS[] = [];
 
 		startingHour : number;
@@ -28,16 +28,17 @@ module Itsis{
 		motivation : number; // base 100
 		state : number;
 		speed : number ;
+		sprite : Phaser.Sprite;
 		locationToGo : LocationToGo;
 		desk : ObjInOpenSpace = null;
 		entree : ObjInOpenSpace = null;
 		path : Object[] = null;
 
 		constructor(){
-			super();
+			// super();
 			this.state = State.home;
-			this.startingHour = 8;
-			this.endingHour = 9;
+			this.startingHour = 7;
+			this.endingHour = 8;
 			this.enduranceMax = 100;
 			this.endurance = this.enduranceMax;
 			this.productivity = 100;
@@ -58,105 +59,81 @@ module Itsis{
 			return objToReturn;
 		}
 
-		goToLocation(location : ObjInOpenSpace){
-			let posx=this.locationToGo.x;
-			let posy=this.locationToGo.x;
-			let width=this.locationToGo.width/2;
-
-			if ((posx-width-this.sprite.isoX)>25 || (posx-width-this.sprite.isoX)<-25){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
-				if ((posx-width)>this.sprite.isoX){
-					// this.sprite.position.x=this.sprite.position.x+5;
-					this.sprite.body.velocity.x = this.speed;
-					this.sprite.body.velocity.y = 0;
-					if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
-
-				}else{
-					this.sprite.body.velocity.x = -this.speed;
-					this.sprite.body.velocity.y = 0;
-					if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
-				}
-			}else{
-				if ((posy-this.sprite.isoY)>25 || (posy-this.sprite.isoY)<-25){
-
-					if (posy>this.sprite.isoY){
-						this.sprite.body.velocity.y = this.speed;
-						this.sprite.body.velocity.x = 0;
-						if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
-					}else{
-						this.sprite.body.velocity.y = -this.speed;
-						this.sprite.body.velocity.x = 0;
-						if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
-					}
-				}else{
-					this.sprite.body.velocity.x =0;
-					this.sprite.body.velocity.y =0;
-					this.sprite.animations.stop();
-					this.locationToGo=null;
-					return true;
-				}
-			}
-			// console.log(this.sprite.body.velocity.x + "#" + this.sprite.body.velocity.y);
-			// console.log(posx + " x#x " + this.sprite.isoX);
-			// console.log(posy + " y#y " + this.sprite.isoY);
-			return false;
-
-		}
 
 		moveOnPath(){
 
 			if (this.path.length>0){
 				let posx=this.path[0].x*38;
 				let posy=this.path[0].y*38;
-				console.log(this.path[0]);
-				let width=this.locationToGo.width/2;
-				if ((posx-width-this.sprite.isoX)>25 || (posx-width-this.sprite.isoX)<-25){// ||(posx-this.sprite.position.x)>20 || (posx-this.sprite.position.x)<20){
-					if ((posx-width)>this.sprite.isoX){
-						// this.sprite.position.x=this.sprite.position.x+5;
-						this.sprite.body.velocity.x = this.speed;
-						this.sprite.body.velocity.y = 0;
-						if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
+				// let width=this.locationToGo.width/2;
+				let width = 16;
+				let endX = 0;
+				let endY = 0;
 
-					}else{
+				if (posx < this.sprite.isoX+width){
+					if ((posx-this.sprite.isoX-width)<-20) { // || (posx - this.sprite.isoX + width)>20){
 						this.sprite.body.velocity.x = -this.speed;
 						this.sprite.body.velocity.y = 0;
 						if (this.sprite.animations.name!="left"){this.sprite.animations.play("left");}
+					}else{
+						endX = 1;
 					}
 				}else{
-					if ((posy-this.sprite.isoY)>25 || (posy-this.sprite.isoY)<-25){
-
-						if (posy>this.sprite.isoY){
-							this.sprite.body.velocity.y = this.speed;
-							this.sprite.body.velocity.x = 0;
-							if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
-						}else{
+					if (posx-this.sprite.isoX+width>20){
+						this.sprite.body.velocity.x = this.speed;
+						this.sprite.body.velocity.y = 0;
+						if (this.sprite.animations.name!="right"){this.sprite.animations.play("right");}
+					}
+					else{
+					endX = 1;
+					}
+				}
+				if (endX == 1){
+					if (posy < this.sprite.isoY+width){
+						if ((posy-this.sprite.isoY-width)<-20) { // || (posx - this.sprite.isoX + width)>20){
 							this.sprite.body.velocity.y = -this.speed;
 							this.sprite.body.velocity.x = 0;
 							if (this.sprite.animations.name!="up"){this.sprite.animations.play("up");}
+						}else{
+							endY = 1;
 						}
 					}else{
-
-						this.path.shift();
-						if (this.path.length == 0){
-							this.sprite.body.velocity.x =0;
-							this.sprite.body.velocity.y =0;
-
-							switch (this.locationToGo.orientation){
-								case "w":
-									this.sprite.animations.play("right");
-									break;
-							}
-
-							this.sprite.animations.stop();
+						if (posy-this.sprite.isoY+width>20){
+							this.sprite.body.velocity.y = this.speed;
+							this.sprite.body.velocity.x = 0;
+							if (this.sprite.animations.name!="down"){this.sprite.animations.play("down");}
 						}
-						// this.locationToGo=null;
-						// return true;
+						else{
+						endY = 1;
+						}
 					}
+
+						if (endY == 1){
+							this.path.shift();
+							if (this.path.length == 0){
+								this.sprite.body.velocity.x =0;
+								this.sprite.body.velocity.y =0;
+								switch (this.locationToGo.orientation){
+									case "w":
+										this.sprite.animations.play("right");
+										break;
+									case "e":
+										this.sprite.animations.play("left");
+										break;
+									case "n":
+										this.sprite.animations.play("down");
+										break;
+									case "s":
+										this.sprite.animations.play("up");
+										break;
+								}
+								this.sprite.animations.stop();
+							}
+						}
+
 				}
+
 			}
-			// console.log(this.sprite.body.velocity.x + "#" + this.sprite.body.velocity.y);
-			// console.log(posx + " x#x " + this.sprite.isoX);
-			// console.log(posy + " y#y " + this.sprite.isoY);
-			// return false;
 		}
 
 
@@ -193,15 +170,12 @@ module Itsis{
 				}
 
 				if (this.path == null){
-					console.log(this.desk);
-					console.log(this.locationToGo);
 					graph = new Graph(openSpace);
 					let isoX = Math.round(this.sprite.isoX / 38);
           let isoY = Math.round(this.sprite.isoY / 38);
           let destX = Math.round(this.locationToGo.x /38);
           let destY = Math.round(this.locationToGo.y / 38);
 					let step  = 1+ Math.round(this.locationToGo.width/2)/38;
-					console.log("step" + step);
 					switch (this.desk.orientation){
 						case "s":	destX+=1;
 							break;
@@ -216,8 +190,6 @@ module Itsis{
 					let start = graph.grid[isoX][isoY];
           let end = graph.grid[destX][destY];
           this.path = astar.search(graph,start,end);
-					console.log(isoX + "/" + isoY +"/" +destX +"/" +destY);
-					console.log(this.path);
 				}
 				if (this.path!=null){
 					this.moveOnPath();
@@ -227,11 +199,6 @@ module Itsis{
 						this.locationToGo = null;
 					}
 				}
-				// let ret = this.goToLocation();
-				// if (ret){
-				// 	this.state = State.working;
-				// 	this.locationToGo = null;
-				// }
 			}
 			//At end
 
@@ -247,7 +214,7 @@ module Itsis{
 	// TODO : gestion du lunch time
 		}
 
-		updateGoToExit(){
+		updateGoToExit(openSpace){
 			if (this.entree == null){
 				this.entree = this.findObjInOS("entree");
 			}
@@ -259,12 +226,23 @@ module Itsis{
 					this.locationToGo.width = this.entree.sprite.width;
 					}
 				}
+				if (this.path == null){
+					graph = new Graph(openSpace);
+					let isoX = Math.round(this.sprite.isoX / 38);
+          let isoY = Math.round(this.sprite.isoY / 38);
+          let destX = Math.round(this.locationToGo.x /38);
+          let destY = Math.round(this.locationToGo.y / 38);
+					let start = graph.grid[isoX][isoY];
+          let end = graph.grid[destX][destY];
+          this.path = astar.search(graph,start,end);
+				}
 				if (this.path!=null){
 					this.moveOnPath();
 					if (this.path.length==0){
-						this.state = State.working;
+						this.state = State.home;
 						this.path = null;
 						this.locationToGo = null;
+						this.sprite.visible=false;
 					}
 				}
 
@@ -283,7 +261,7 @@ module Itsis{
 					this.updateWorking(timeInOpenSpace);
 				break;
 				case State.goToExit:
-					this.updateGoToExit();
+					this.updateGoToExit(openSpace);
 				break;
 				default:
 				break;

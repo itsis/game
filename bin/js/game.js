@@ -76,16 +76,14 @@ var Itsis;
         }
         return LocationToGo;
     })();
-    var CharacterOS = (function (_super) {
-        __extends(CharacterOS, _super);
+    var CharacterOS = (function () {
         function CharacterOS() {
-            _super.call(this);
             this.desk = null;
             this.entree = null;
             this.path = null;
             this.state = State.home;
-            this.startingHour = 8;
-            this.endingHour = 9;
+            this.startingHour = 7;
+            this.endingHour = 8;
             this.enduranceMax = 100;
             this.endurance = this.enduranceMax;
             this.productivity = 100;
@@ -104,61 +102,27 @@ var Itsis;
             }
             return objToReturn;
         };
-        CharacterOS.prototype.goToLocation = function (location) {
-            var posx = this.locationToGo.x;
-            var posy = this.locationToGo.x;
-            var width = this.locationToGo.width / 2;
-            if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
-                if ((posx - width) > this.sprite.isoX) {
-                    this.sprite.body.velocity.x = this.speed;
-                    this.sprite.body.velocity.y = 0;
-                    if (this.sprite.animations.name != "right") {
-                        this.sprite.animations.play("right");
-                    }
-                }
-                else {
-                    this.sprite.body.velocity.x = -this.speed;
-                    this.sprite.body.velocity.y = 0;
-                    if (this.sprite.animations.name != "left") {
-                        this.sprite.animations.play("left");
-                    }
-                }
-            }
-            else {
-                if ((posy - this.sprite.isoY) > 25 || (posy - this.sprite.isoY) < -25) {
-                    if (posy > this.sprite.isoY) {
-                        this.sprite.body.velocity.y = this.speed;
-                        this.sprite.body.velocity.x = 0;
-                        if (this.sprite.animations.name != "down") {
-                            this.sprite.animations.play("down");
-                        }
-                    }
-                    else {
-                        this.sprite.body.velocity.y = -this.speed;
-                        this.sprite.body.velocity.x = 0;
-                        if (this.sprite.animations.name != "up") {
-                            this.sprite.animations.play("up");
-                        }
-                    }
-                }
-                else {
-                    this.sprite.body.velocity.x = 0;
-                    this.sprite.body.velocity.y = 0;
-                    this.sprite.animations.stop();
-                    this.locationToGo = null;
-                    return true;
-                }
-            }
-            return false;
-        };
         CharacterOS.prototype.moveOnPath = function () {
             if (this.path.length > 0) {
                 var posx = this.path[0].x * 38;
                 var posy = this.path[0].y * 38;
-                console.log(this.path[0]);
-                var width = this.locationToGo.width / 2;
-                if ((posx - width - this.sprite.isoX) > 25 || (posx - width - this.sprite.isoX) < -25) {
-                    if ((posx - width) > this.sprite.isoX) {
+                var width = 16;
+                var endX = 0;
+                var endY = 0;
+                if (posx < this.sprite.isoX + width) {
+                    if ((posx - this.sprite.isoX - width) < -20) {
+                        this.sprite.body.velocity.x = -this.speed;
+                        this.sprite.body.velocity.y = 0;
+                        if (this.sprite.animations.name != "left") {
+                            this.sprite.animations.play("left");
+                        }
+                    }
+                    else {
+                        endX = 1;
+                    }
+                }
+                else {
+                    if (posx - this.sprite.isoX + width > 20) {
                         this.sprite.body.velocity.x = this.speed;
                         this.sprite.body.velocity.y = 0;
                         if (this.sprite.animations.name != "right") {
@@ -166,16 +130,24 @@ var Itsis;
                         }
                     }
                     else {
-                        this.sprite.body.velocity.x = -this.speed;
-                        this.sprite.body.velocity.y = 0;
-                        if (this.sprite.animations.name != "left") {
-                            this.sprite.animations.play("left");
-                        }
+                        endX = 1;
                     }
                 }
-                else {
-                    if ((posy - this.sprite.isoY) > 25 || (posy - this.sprite.isoY) < -25) {
-                        if (posy > this.sprite.isoY) {
+                if (endX == 1) {
+                    if (posy < this.sprite.isoY + width) {
+                        if ((posy - this.sprite.isoY - width) < -20) {
+                            this.sprite.body.velocity.y = -this.speed;
+                            this.sprite.body.velocity.x = 0;
+                            if (this.sprite.animations.name != "up") {
+                                this.sprite.animations.play("up");
+                            }
+                        }
+                        else {
+                            endY = 1;
+                        }
+                    }
+                    else {
+                        if (posy - this.sprite.isoY + width > 20) {
                             this.sprite.body.velocity.y = this.speed;
                             this.sprite.body.velocity.x = 0;
                             if (this.sprite.animations.name != "down") {
@@ -183,14 +155,10 @@ var Itsis;
                             }
                         }
                         else {
-                            this.sprite.body.velocity.y = -this.speed;
-                            this.sprite.body.velocity.x = 0;
-                            if (this.sprite.animations.name != "up") {
-                                this.sprite.animations.play("up");
-                            }
+                            endY = 1;
                         }
                     }
-                    else {
+                    if (endY == 1) {
                         this.path.shift();
                         if (this.path.length == 0) {
                             this.sprite.body.velocity.x = 0;
@@ -198,6 +166,15 @@ var Itsis;
                             switch (this.locationToGo.orientation) {
                                 case "w":
                                     this.sprite.animations.play("right");
+                                    break;
+                                case "e":
+                                    this.sprite.animations.play("left");
+                                    break;
+                                case "n":
+                                    this.sprite.animations.play("down");
+                                    break;
+                                case "s":
+                                    this.sprite.animations.play("up");
                                     break;
                             }
                             this.sprite.animations.stop();
@@ -234,15 +211,12 @@ var Itsis;
                 }
             }
             if (this.path == null) {
-                console.log(this.desk);
-                console.log(this.locationToGo);
                 graph = new Graph(openSpace);
                 var isoX = Math.round(this.sprite.isoX / 38);
                 var isoY = Math.round(this.sprite.isoY / 38);
                 var destX = Math.round(this.locationToGo.x / 38);
                 var destY = Math.round(this.locationToGo.y / 38);
                 var step = 1 + Math.round(this.locationToGo.width / 2) / 38;
-                console.log("step" + step);
                 switch (this.desk.orientation) {
                     case "s":
                         destX += 1;
@@ -260,8 +234,6 @@ var Itsis;
                 var start = graph.grid[isoX][isoY];
                 var end = graph.grid[destX][destY];
                 this.path = astar.search(graph, start, end);
-                console.log(isoX + "/" + isoY + "/" + destX + "/" + destY);
-                console.log(this.path);
             }
             if (this.path != null) {
                 this.moveOnPath();
@@ -277,7 +249,7 @@ var Itsis;
                 this.state = State.goToExit;
             }
         };
-        CharacterOS.prototype.updateGoToExit = function () {
+        CharacterOS.prototype.updateGoToExit = function (openSpace) {
             if (this.entree == null) {
                 this.entree = this.findObjInOS("entree");
             }
@@ -289,12 +261,23 @@ var Itsis;
                     this.locationToGo.width = this.entree.sprite.width;
                 }
             }
+            if (this.path == null) {
+                graph = new Graph(openSpace);
+                var isoX = Math.round(this.sprite.isoX / 38);
+                var isoY = Math.round(this.sprite.isoY / 38);
+                var destX = Math.round(this.locationToGo.x / 38);
+                var destY = Math.round(this.locationToGo.y / 38);
+                var start = graph.grid[isoX][isoY];
+                var end = graph.grid[destX][destY];
+                this.path = astar.search(graph, start, end);
+            }
             if (this.path != null) {
                 this.moveOnPath();
                 if (this.path.length == 0) {
-                    this.state = State.working;
+                    this.state = State.home;
                     this.path = null;
                     this.locationToGo = null;
+                    this.sprite.visible = false;
                 }
             }
         };
@@ -310,7 +293,7 @@ var Itsis;
                     this.updateWorking(timeInOpenSpace);
                     break;
                 case State.goToExit:
-                    this.updateGoToExit();
+                    this.updateGoToExit(openSpace);
                     break;
                 default:
                     break;
@@ -319,7 +302,7 @@ var Itsis;
         ;
         CharacterOS.listOfCharacter = [];
         return CharacterOS;
-    })(Itsis.ObjInOpenSpace);
+    })();
     Itsis.CharacterOS = CharacterOS;
 })(Itsis || (Itsis = {}));
 var Itsis;
@@ -483,7 +466,6 @@ var Itsis;
                     this.mapOpenSpace[isoX][isoY] = 0;
                 }
             }
-            console.log(this.mapOpenSpace);
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
