@@ -5,12 +5,15 @@ module Itsis{
 
 	export class ObjInOpenSpace{
 		static listOfObj : ObjInOpenSpace[] =[];
-		id : number;
-		locationX : number; // localisation sur l'openspace coord X/Y provient du tilemap de l'openspace
-		locationY : number;
+		id : Number;
+		locationX : Number; // localisation sur l'openspace coord X/Y provient du tilemap de l'openspace
+		locationY : Number;
+		orientation : String;
 		// template : ObjInOpenSpaceTemplate;
 		typeItem : String;
 		sprite : Phaser.Sprite;
+		spriteType : String;
+		frame : Number;
 
 
 		constructor(){
