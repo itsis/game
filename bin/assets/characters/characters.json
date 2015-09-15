@@ -1,0 +1,30 @@
+{
+  "characters":[
+  {
+    "name" : "perso",
+    "startinghour" : 7,
+    "endinghour" : 8,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/perso.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 16,
+    "animationstep" : 4
+  },
+  {
+    "name" : "malepirate",
+    "startinghour" : 7,
+    "endinghour" : 8,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/male_pirate.png",
+    "sizex" : 32,
+    "sizey" :48,
+    "nbanim" : 16,
+    "animationstep" : 4
+  }
+  ]
+}

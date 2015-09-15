@@ -11,6 +11,7 @@ module Itsis {
         lastTicksHour : number;
         levelJSON;
         sceneryJSON;
+        charJSON;
         mapOpenSpace : number[][];
 
 
@@ -24,6 +25,7 @@ module Itsis {
 
           // Load assets & level data
           this.levelJSON = this.game.cache.getJSON('level');
+          this.charJSON = this.game.cache.getJSON('characters');
           this.sceneryJSON =  this.game.cache.getJSON('scenery');
           // Load level images
             // Load floor
@@ -31,7 +33,12 @@ module Itsis {
           this.game.load.image('entree', 'assets/scenery/tile_entree.png');
             // Load assets
               // Retrieve image and image type
-          this.load.spritesheet('perso', 'assets/characters/perso.png',64,64,16);
+
+          for (let ch of  this.charJSON.characters){
+              this.load.spritesheet(ch.name, ch.sprite,ch.sizex,ch.sizey,ch.nbanim);
+          }
+          CharacterOS.charJSON = this.charJSON;
+
           for (let obj of this.levelJSON.openSpace.objInOpenSpace){
               let idObj = obj.id;
               for (let scen in this.sceneryJSON){
@@ -99,19 +106,7 @@ module Itsis {
             tempObjEntree.sprite.anchor.set(0.5,0.2);
             tempObjEntree.typeItem = "entree";
 
-            let tempChar = new CharacterOS();
-            tempChar.sprite = this.game.add.isoSprite(tempObjEntree.sprite.isoX,tempObjEntree.sprite.isoY, 0, 'perso', 0, this.decorGroup);
-
-            tempChar.sprite.anchor.set(0.5);
-            // console.log(tempChar.sprite);
-            tempChar.sprite.frame = 0;
-            tempChar.sprite.animations.add("down",[0,1,2,3],10,true);
-            tempChar.sprite.animations.add("left",[4,5,6,7],10,true);
-            tempChar.sprite.animations.add("right",[8,9,10,11],10,true);
-            tempChar.sprite.animations.add("up",[12,13,14,15],10,true);
-
-            tempChar.sprite.visible=false;
-            this.game.physics.isoArcade.enable(tempChar.sprite);
+            let tempChar = new CharacterOS("malepirate",this.game,this.decorGroup);
 
             this.mapOpenSpace =[this.levelJSON.openSpace.sizex];
             for (let x=0; x < this.levelJSON.openSpace.sizex;x++){
@@ -125,14 +120,14 @@ module Itsis {
               }
             }
 
+            // Construction de la map de l'openspace servant plus tard dans les astar (pathfinding) des CharacterOS
+            // centralisé ici pour l'instant
             for (let it of ObjInOpenSpace.listOfObj){
-
               let isoX = it.sprite.isoX / 38;
               let isoY = it.sprite.isoY / 38;
               if (it.typeItem !="entree"){
                 if (it.sprite.width>38){
                   switch (it.orientation){
-
                     case "w":
                       this.mapOpenSpace[isoX-1][isoY] = 0;
                     break;
