@@ -96,7 +96,7 @@ module Itsis {
 
             let tempObjEntree = new ObjInOpenSpace();
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
-            tempObjEntree.sprite.anchor.set(0.5,0);
+            tempObjEntree.sprite.anchor.set(0.5,0.2);
             tempObjEntree.typeItem = "entree";
 
             let tempChar = new CharacterOS();
@@ -174,19 +174,19 @@ module Itsis {
 
         formatHour(){
           if ((this.game.time.time - this.lastTicksHour) >= 1000 ){
+            this.lastTicksHour = this.game.time.time;
             this.actualDate+=0.10;
-            let tempHour = parseInt(this.actualDate);
-            let tempMin = parseInt((this.actualDate-tempHour) * 100);
+            var tempHour = Math.floor(this.actualDate);
+            var tempMin = Math.round((this.actualDate-tempHour) * 100);
             if (tempMin>=60){
               this.actualDate=tempHour+1;
+              if (this.actualDate>=24){
+                this.actualDate-=24;
+              }
             }
-            if (this.actualDate>24){
-              this.actualDate-=24;
-            }
-            this.lastTicksHour = this.game.time.time;
-            tempHour = parseInt(this.actualDate);
-            tempMin = parseInt((this.actualDate-tempHour) * 100);
-            this.text.setText(((tempHour>10?tempHour:"0" + tempHour) + ":" + (tempMin>10?tempMin:"0"+tempMin)));
+            tempHour = Math.round(this.actualDate);
+            tempMin = Math.round((this.actualDate-tempHour) * 100);
+            this.text.setText(((tempHour>=10?tempHour:"0" + tempHour) + ":" + (tempMin>=10?tempMin:"0"+tempMin)));
           }
         }
 

@@ -197,17 +197,14 @@ var Itsis;
             }
         };
         ;
-        CharacterOS.prototype.updateGoToDesk = function (openSpace) {
-            if (this.desk == null) {
-                this.desk = this.findObjInOS("desk");
-            }
-            if (this.desk != null) {
+        CharacterOS.prototype.createPath = function (ObjGoTo, openSpace) {
+            if (ObjGoTo != null) {
                 if (this.locationToGo == null) {
                     this.locationToGo = new LocationToGo();
-                    this.locationToGo.x = this.desk.sprite.isoX;
-                    this.locationToGo.y = this.desk.sprite.isoY;
-                    this.locationToGo.width = this.desk.sprite.width;
-                    this.locationToGo.orientation = this.desk.orientation;
+                    this.locationToGo.x = ObjGoTo.sprite.isoX;
+                    this.locationToGo.y = ObjGoTo.sprite.isoY;
+                    this.locationToGo.width = ObjGoTo.sprite.width;
+                    this.locationToGo.orientation = ObjGoTo.orientation;
                 }
             }
             if (this.path == null) {
@@ -217,7 +214,7 @@ var Itsis;
                 var destX = Math.round(this.locationToGo.x / 38);
                 var destY = Math.round(this.locationToGo.y / 38);
                 var step = 1 + Math.round(this.locationToGo.width / 2) / 38;
-                switch (this.desk.orientation) {
+                switch (this.locationToGo.orientation) {
                     case "s":
                         destX += 1;
                         break;
@@ -235,12 +232,20 @@ var Itsis;
                 var end = graph.grid[destX][destY];
                 this.path = astar.search(graph, start, end);
             }
-            if (this.path != null) {
-                this.moveOnPath();
-                if (this.path.length == 0) {
-                    this.state = State.working;
-                    this.path = null;
-                    this.locationToGo = null;
+        };
+        CharacterOS.prototype.updateGoToDesk = function (openSpace) {
+            if (this.desk == null) {
+                this.desk = this.findObjInOS("desk");
+            }
+            if (this.desk != null) {
+                this.createPath(this.desk, openSpace);
+                if (this.path != null) {
+                    this.moveOnPath();
+                    if (this.path.length == 0) {
+                        this.state = State.working;
+                        this.path = null;
+                        this.locationToGo = null;
+                    }
                 }
             }
         };
@@ -254,30 +259,15 @@ var Itsis;
                 this.entree = this.findObjInOS("entree");
             }
             if (this.entree != null) {
-                if (this.locationToGo == null) {
-                    this.locationToGo = new LocationToGo();
-                    this.locationToGo.x = this.entree.sprite.isoX;
-                    this.locationToGo.y = this.entree.sprite.isoY;
-                    this.locationToGo.width = this.entree.sprite.width;
-                }
-            }
-            if (this.path == null) {
-                graph = new Graph(openSpace);
-                var isoX = Math.round(this.sprite.isoX / 38);
-                var isoY = Math.round(this.sprite.isoY / 38);
-                var destX = Math.round(this.locationToGo.x / 38);
-                var destY = Math.round(this.locationToGo.y / 38);
-                var start = graph.grid[isoX][isoY];
-                var end = graph.grid[destX][destY];
-                this.path = astar.search(graph, start, end);
-            }
-            if (this.path != null) {
-                this.moveOnPath();
-                if (this.path.length == 0) {
-                    this.state = State.home;
-                    this.path = null;
-                    this.locationToGo = null;
-                    this.sprite.visible = false;
+                this.createPath(this.entree, openSpace);
+                if (this.path != null) {
+                    this.moveOnPath();
+                    if (this.path.length == 0) {
+                        this.state = State.home;
+                        this.path = null;
+                        this.locationToGo = null;
+                        this.sprite.visible = false;
+                    }
                 }
             }
         };
@@ -421,7 +411,7 @@ var Itsis;
             }
             var tempObjEntree = new Itsis.ObjInOpenSpace();
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
-            tempObjEntree.sprite.anchor.set(0.5, 0);
+            tempObjEntree.sprite.anchor.set(0.5, 0.2);
             tempObjEntree.typeItem = "entree";
             var tempChar = new Itsis.CharacterOS();
             tempChar.sprite = this.game.add.isoSprite(tempObjEntree.sprite.isoX, tempObjEntree.sprite.isoY, 0, 'perso', 0, this.decorGroup);
@@ -484,19 +474,23 @@ var Itsis;
         };
         Jeu.prototype.formatHour = function () {
             if ((this.game.time.time - this.lastTicksHour) >= 1000) {
-                this.actualDate += 0.10;
-                var tempHour = parseInt(this.actualDate);
-                var tempMin = parseInt((this.actualDate - tempHour) * 100);
-                if (tempMin >= 60) {
-                    this.actualDate = tempHour + 1;
-                }
-                if (this.actualDate > 24) {
-                    this.actualDate -= 24;
-                }
                 this.lastTicksHour = this.game.time.time;
-                tempHour = parseInt(this.actualDate);
-                tempMin = parseInt((this.actualDate - tempHour) * 100);
-                this.text.setText(((tempHour > 10 ? tempHour : "0" + tempHour) + ":" + (tempMin > 10 ? tempMin : "0" + tempMin)));
+                this.actualDate += 0.10;
+                var tempHour = Math.floor(this.actualDate);
+                var tempMin = Math.round((this.actualDate - tempHour) * 100);
+                console.log("h" + tempHour + "/" + tempMin);
+                if (tempMin >= 60) {
+                    console.log("hh " + tempHour);
+                    this.actualDate = tempHour + 1;
+                    console.log("a" + this.actualDate);
+                    if (this.actualDate >= 24) {
+                        this.actualDate -= 24;
+                    }
+                }
+                tempHour = Math.round(this.actualDate);
+                tempMin = Math.round((this.actualDate - tempHour) * 100);
+                this.text.setText(((tempHour >= 10 ? tempHour : "0" + tempHour) + ":" + (tempMin >= 10 ? tempMin : "0" + tempMin)));
+                console.log(this.actualDate);
             }
         };
         Jeu.prototype.startMainMenu = function () {

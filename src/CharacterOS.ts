@@ -153,18 +153,14 @@ module Itsis{
 			}
 		};
 
-		updateGoToDesk(openSpace){
-			// path to desk
-			if (this.desk == null){
-				this.desk = this.findObjInOS("desk");
-			}
-			if (this.desk!=null){
+		createPath(ObjGoTo,openSpace){
+			if (ObjGoTo!=null){
 				if (this.locationToGo==null){
 					this.locationToGo = new LocationToGo();
-					this.locationToGo.x = this.desk.sprite.isoX;
-					this.locationToGo.y = this.desk.sprite.isoY;
-					this.locationToGo.width = this.desk.sprite.width;
-					this.locationToGo.orientation = this.desk.orientation;
+					this.locationToGo.x = ObjGoTo.sprite.isoX;
+					this.locationToGo.y = ObjGoTo.sprite.isoY;
+					this.locationToGo.width = ObjGoTo.sprite.width;
+					this.locationToGo.orientation = ObjGoTo.orientation;
 
 					}
 				}
@@ -176,7 +172,7 @@ module Itsis{
           let destX = Math.round(this.locationToGo.x /38);
           let destY = Math.round(this.locationToGo.y / 38);
 					let step  = 1+ Math.round(this.locationToGo.width/2)/38;
-					switch (this.desk.orientation){
+					switch (this.locationToGo.orientation){
 						case "s":	destX+=1;
 							break;
 						case "w":
@@ -191,6 +187,16 @@ module Itsis{
           let end = graph.grid[destX][destY];
           this.path = astar.search(graph,start,end);
 				}
+
+		}
+
+		updateGoToDesk(openSpace){
+			if (this.desk == null){
+				this.desk = this.findObjInOS("desk");
+			}
+
+			if (this.desk!=null){
+				this.createPath(this.desk,openSpace);
 				if (this.path!=null){
 					this.moveOnPath();
 					if (this.path.length==0){
@@ -200,6 +206,7 @@ module Itsis{
 					}
 				}
 			}
+		}
 			//At end
 
 
@@ -219,23 +226,7 @@ module Itsis{
 				this.entree = this.findObjInOS("entree");
 			}
 			if (this.entree!=null){
-				if (this.locationToGo==null){
-					this.locationToGo = new LocationToGo();
-					this.locationToGo.x = this.entree.sprite.isoX;
-					this.locationToGo.y = this.entree.sprite.isoY;
-					this.locationToGo.width = this.entree.sprite.width;
-					}
-				}
-				if (this.path == null){
-					graph = new Graph(openSpace);
-					let isoX = Math.round(this.sprite.isoX / 38);
-          let isoY = Math.round(this.sprite.isoY / 38);
-          let destX = Math.round(this.locationToGo.x /38);
-          let destY = Math.round(this.locationToGo.y / 38);
-					let start = graph.grid[isoX][isoY];
-          let end = graph.grid[destX][destY];
-          this.path = astar.search(graph,start,end);
-				}
+				this.createPath(this.entree,openSpace);
 				if (this.path!=null){
 					this.moveOnPath();
 					if (this.path.length==0){
@@ -245,8 +236,7 @@ module Itsis{
 						this.sprite.visible=false;
 					}
 				}
-
-
+			}
 		}
 
 		update(timeInOpenSpace,openSpace){
@@ -266,10 +256,7 @@ module Itsis{
 				default:
 				break;
 			}
-
-
 		};
-
 
 	}
 }
