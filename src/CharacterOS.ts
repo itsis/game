@@ -1,6 +1,7 @@
 /// <reference path="./ObjInOpenSpace.ts"/>
 /// <reference path="../tsDefinitions/astar.js" />
 
+
 module Itsis{
 	export enum State{
 			home = 0,
@@ -19,6 +20,7 @@ module Itsis{
 
 	export class CharacterOS{
 		public static listOfCharacter : CharacterOS[] = [];
+		public static charJSON = null;
 
 		startingHour : number;
 		endingHour : number;
@@ -33,21 +35,75 @@ module Itsis{
 		desk : ObjInOpenSpace = null;
 		entree : ObjInOpenSpace = null;
 		path : Object[] = null;
+		name : String;
 
-		constructor(){
+		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
 			// super();
+
+			for (let ch of CharacterOS.charJSON.characters){
+				if (ch.name == name){
+					this.name = name;
+					this.startingHour = ch.startinghour;
+					this.endingHour = ch.endinghour;
+					this.enduranceMax = ch.endurance;
+					this.endurance = this.enduranceMax;
+					this.productivity = ch.productivity;
+					this.motivation = ch.motivation;
+
+					this.entree = this.findObjInOS("entree");
+					this.sprite = game.add.isoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
+					game.physics.isoArcade.enable(this.sprite);
+					this.sprite.anchor.set(0.5);
+
+					this.sprite.frame = 0;
+					let itAnim=0;
+					let tab=[ch.animationstep];
+					for (let i = 0; i <ch.animationstep;i++){
+						tab[i]=itAnim;
+						itAnim+=1;
+					}
+					this.sprite.animations.add("down",tab,10,true);
+					for (let i = 0; i <ch.animationstep;i++){
+						tab[i]=itAnim;
+						itAnim+=1;
+					}
+					this.sprite.animations.add("left",tab,10,true);
+					for (let i = 0; i <ch.animationstep;i++){
+						tab[i]=itAnim;
+						itAnim+=1;
+					}
+					this.sprite.animations.add("right",tab,10,true);
+					for (let i = 0; i <ch.animationstep;i++){
+						tab[i]=itAnim;
+						itAnim+=1;
+					}
+					this.sprite.animations.add("up",tab,10,true);
+
+					this.sprite.visible=false;
+
+				}
+			}
+
 			this.state = State.home;
-			this.startingHour = 7;
-			this.endingHour = 8;
-			this.enduranceMax = 100;
-			this.endurance = this.enduranceMax;
-			this.productivity = 100;
-			this.motivation = 70;
 			this.speed = 200;
 			this.locationToGo = null;
 			// console
 			CharacterOS.listOfCharacter.push(this);
-		};
+		}
+
+		setSprite(sprite){
+			this.sprite = sprite;
+			this.sprite.anchor.set(0.5);
+
+			this.sprite.frame = 0;
+
+			this.sprite.animations.add("down",[0,1,2,3],10,true);
+			this.sprite.animations.add("left",[4,5,6,7],10,true);
+			this.sprite.animations.add("right",[8,9,10,11],10,true);
+			this.sprite.animations.add("up",[12,13,14,15],10,true);
+
+			this.sprite.visible=false;
+		}
 
 		findObjInOS(typeItem : String){
 			let objToReturn = null;

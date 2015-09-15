@@ -77,22 +77,66 @@ var Itsis;
         return LocationToGo;
     })();
     var CharacterOS = (function () {
-        function CharacterOS() {
+        function CharacterOS(name, game, group) {
+            // super();
             this.desk = null;
             this.entree = null;
             this.path = null;
+            for (var _i = 0, _a = CharacterOS.charJSON.characters; _i < _a.length; _i++) {
+                var ch = _a[_i];
+                if (ch.name == name) {
+                    this.name = name;
+                    this.startingHour = ch.startinghour;
+                    this.endingHour = ch.endinghour;
+                    this.enduranceMax = ch.endurance;
+                    this.endurance = this.enduranceMax;
+                    this.productivity = ch.productivity;
+                    this.motivation = ch.motivation;
+                    this.entree = this.findObjInOS("entree");
+                    this.sprite = game.add.isoSprite(this.entree.sprite.isoX, this.entree.sprite.isoY, 0, name, 0, group);
+                    game.physics.isoArcade.enable(this.sprite);
+                    this.sprite.anchor.set(0.5);
+                    this.sprite.frame = 0;
+                    var itAnim = 0;
+                    var tab = [ch.animationstep];
+                    for (var i = 0; i < ch.animationstep; i++) {
+                        tab[i] = itAnim;
+                        itAnim += 1;
+                    }
+                    this.sprite.animations.add("down", tab, 10, true);
+                    for (var i = 0; i < ch.animationstep; i++) {
+                        tab[i] = itAnim;
+                        itAnim += 1;
+                    }
+                    this.sprite.animations.add("left", tab, 10, true);
+                    for (var i = 0; i < ch.animationstep; i++) {
+                        tab[i] = itAnim;
+                        itAnim += 1;
+                    }
+                    this.sprite.animations.add("right", tab, 10, true);
+                    for (var i = 0; i < ch.animationstep; i++) {
+                        tab[i] = itAnim;
+                        itAnim += 1;
+                    }
+                    this.sprite.animations.add("up", tab, 10, true);
+                    this.sprite.visible = false;
+                }
+            }
             this.state = State.home;
-            this.startingHour = 7;
-            this.endingHour = 8;
-            this.enduranceMax = 100;
-            this.endurance = this.enduranceMax;
-            this.productivity = 100;
-            this.motivation = 70;
             this.speed = 200;
             this.locationToGo = null;
             CharacterOS.listOfCharacter.push(this);
         }
-        ;
+        CharacterOS.prototype.setSprite = function (sprite) {
+            this.sprite = sprite;
+            this.sprite.anchor.set(0.5);
+            this.sprite.frame = 0;
+            this.sprite.animations.add("down", [0, 1, 2, 3], 10, true);
+            this.sprite.animations.add("left", [4, 5, 6, 7], 10, true);
+            this.sprite.animations.add("right", [8, 9, 10, 11], 10, true);
+            this.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
+            this.sprite.visible = false;
+        };
         CharacterOS.prototype.findObjInOS = function (typeItem) {
             var objToReturn = null;
             for (var objOs in Itsis.ObjInOpenSpace.listOfObj) {
@@ -291,6 +335,7 @@ var Itsis;
         };
         ;
         CharacterOS.listOfCharacter = [];
+        CharacterOS.charJSON = null;
         return CharacterOS;
     })();
     Itsis.CharacterOS = CharacterOS;
@@ -353,12 +398,17 @@ var Itsis;
             this.game.iso.anchor.setTo(0.5, 0.2);
             this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
             this.levelJSON = this.game.cache.getJSON('level');
+            this.charJSON = this.game.cache.getJSON('characters');
             this.sceneryJSON = this.game.cache.getJSON('scenery');
             this.game.load.image('floor', 'assets/scenery/' + this.levelJSON.openSpace.floor);
             this.game.load.image('entree', 'assets/scenery/tile_entree.png');
-            this.load.spritesheet('perso', 'assets/characters/perso.png', 64, 64, 16);
-            for (var _i = 0, _a = this.levelJSON.openSpace.objInOpenSpace; _i < _a.length; _i++) {
-                var obj = _a[_i];
+            for (var _i = 0, _a = this.charJSON.characters; _i < _a.length; _i++) {
+                var ch = _a[_i];
+                this.load.spritesheet(ch.name, ch.sprite, ch.sizex, ch.sizey, ch.nbanim);
+            }
+            Itsis.CharacterOS.charJSON = this.charJSON;
+            for (var _b = 0, _c = this.levelJSON.openSpace.objInOpenSpace; _b < _c.length; _b++) {
+                var obj = _c[_b];
                 var idObj = obj.id;
                 for (var scen in this.sceneryJSON) {
                     if (scen.toString() == idObj) {
@@ -413,16 +463,7 @@ var Itsis;
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5, 0.2);
             tempObjEntree.typeItem = "entree";
-            var tempChar = new Itsis.CharacterOS();
-            tempChar.sprite = this.game.add.isoSprite(tempObjEntree.sprite.isoX, tempObjEntree.sprite.isoY, 0, 'perso', 0, this.decorGroup);
-            tempChar.sprite.anchor.set(0.5);
-            tempChar.sprite.frame = 0;
-            tempChar.sprite.animations.add("down", [0, 1, 2, 3], 10, true);
-            tempChar.sprite.animations.add("left", [4, 5, 6, 7], 10, true);
-            tempChar.sprite.animations.add("right", [8, 9, 10, 11], 10, true);
-            tempChar.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
-            tempChar.sprite.visible = false;
-            this.game.physics.isoArcade.enable(tempChar.sprite);
+            var tempChar = new Itsis.CharacterOS("malepirate", this.game, this.decorGroup);
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
             for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
                 this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];
@@ -478,11 +519,8 @@ var Itsis;
                 this.actualDate += 0.10;
                 var tempHour = Math.floor(this.actualDate);
                 var tempMin = Math.round((this.actualDate - tempHour) * 100);
-                console.log("h" + tempHour + "/" + tempMin);
                 if (tempMin >= 60) {
-                    console.log("hh " + tempHour);
                     this.actualDate = tempHour + 1;
-                    console.log("a" + this.actualDate);
                     if (this.actualDate >= 24) {
                         this.actualDate -= 24;
                     }
@@ -490,7 +528,6 @@ var Itsis;
                 tempHour = Math.round(this.actualDate);
                 tempMin = Math.round((this.actualDate - tempHour) * 100);
                 this.text.setText(((tempHour >= 10 ? tempHour : "0" + tempHour) + ":" + (tempMin >= 10 ? tempMin : "0" + tempMin)));
-                console.log(this.actualDate);
             }
         };
         Jeu.prototype.startMainMenu = function () {
@@ -516,6 +553,7 @@ var Itsis;
         }
         Loaderjeu.prototype.preload = function () {
             this.game.load.json('scenery', 'assets/scenery/scenery.json');
+            this.game.load.json('characters', 'assets/characters/characters.json');
             this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
