@@ -12,6 +12,7 @@ var Itsis;
         }
         Boot.prototype.preload = function () {
             this.load.image('preloadBar', 'assets/images/preloader_progressbar.png');
+            this.game.load.json('guiobj', 'assets/gui/guiobj.json');
         };
         Boot.prototype.create = function () {
             this.input.maxPointers = 1;
@@ -571,28 +572,45 @@ var Itsis;
             _super.apply(this, arguments);
         }
         MainMenu.prototype.create = function () {
-            var background = this.add.sprite(0, 0, 'mainmenu_background');
-            background.alpha = 0;
-            this.add.tween(background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            var itsisTextStyle = {
-                font: "bold 72px Arial",
-                fill: "#f00",
-                align: "center"
-            };
-            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
-            itsisText.anchor.set(0.5);
-            var buttonTextStyle = {
-                font: "32px Arial",
-                fill: "#f00"
-            };
-            var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
-            playButton.anchor.set(0.5);
-            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Jouer", buttonTextStyle);
-            playButtonText.anchor.set(0.5);
-            var creditsButton = this.game.add.button(this.game.world.centerX, 6 * this.game.height / 10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
-            creditsButton.anchor.set(0.5);
-            var creditsButtonText = this.game.add.text(this.game.world.centerX, 6 * this.game.height / 10, "Credits", buttonTextStyle);
-            creditsButtonText.anchor.set(0.5);
+            //Background
+            // var background = this.add.sprite(0, 0, 'mainmenu_background');
+            // background.alpha = 0;
+            //
+            // this.add.tween(background).to({ alpha: 1}, 2000, Phaser.Easing.Bounce.InOut, true);
+            //
+            // //Title
+            // var itsisTextStyle = {
+            //   font: "bold 72px Arial",
+            //   fill: "#f00",
+            //   align: "center"
+            // }
+            // var itsisText = this.game.add.text(this.game.world.centerX, this.game.height/10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
+            // itsisText.anchor.set(0.5);
+            //
+            // //Buttons
+            // var buttonTextStyle = {
+            //   font:"32px Arial",
+            //   fill: "#f00"
+            // }
+            //
+            // var playButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            // playButton.anchor.set(0.5);
+            // var playButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "Jouer", buttonTextStyle);
+            // playButtonText.anchor.set(0.5);
+            //
+            // var creditsButton = this.game.add.button(this.game.world.centerX, 6*this.game.height/10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
+            // creditsButton.anchor.set(0.5);
+            // var creditsButtonText = this.game.add.text(this.game.world.centerX, 6*this.game.height/10, "Credits", buttonTextStyle);
+            // creditsButtonText.anchor.set(0.5);
+            EZGUI.renderer = this.game.renderer;
+            var guiObj = this.game.cache.getJSON('guiobj'), guiObj;
+            EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
+                //here you can pass multiple themes
+                var guiContainer = EZGUI.create(guiObj, 'kenney');
+                EZGUI.components.btn1.on('click', function (event) {
+                    console.log('clicked', event);
+                });
+            });
         };
         MainMenu.prototype.startCredits = function () {
             this.game.state.start("Credits", true, false);
