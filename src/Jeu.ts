@@ -78,6 +78,16 @@ module Itsis {
                  guiContainer.visible=false;
                }
              );
+             EZGUI.components.btn2.on('click',function (event,me)
+             {
+               for (let tempChar of CharacterOS.listOfCharacter){
+                 if (tempChar.name == EZGUI.components.nameperso.text){
+                   tempChar.productivity-=10;
+                   EZGUI.components.productivity.text=tempChar.productivity;
+                 }
+               }
+             }
+           );
           });
 
 
@@ -134,12 +144,14 @@ module Itsis {
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5,0.2);
             tempObjEntree.typeItem = "entree";
-            function onDown(event,sprite){
+            function onDown(event,tempChar){
               listOfGui[0].visible=true;
+              EZGUI.components.nameperso.text=this.char.name;
+              EZGUI.components.productivity.text=this.char.productivity;
             };
             let tempChar = new CharacterOS("malepirate",this.game,this.decorGroup);
             tempChar.sprite.inputEnabled = true;
-            tempChar.sprite.events.onInputDown.add(onDown,tempChar);
+            tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
             this.mapOpenSpace =[this.levelJSON.openSpace.sizex];
             for (let x=0; x < this.levelJSON.openSpace.sizex;x++){

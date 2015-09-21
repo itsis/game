@@ -433,8 +433,20 @@ var Itsis;
                 var guiContainer = EZGUI.create(persoGuiJSON, 'kenney');
                 guiContainer.visible = false;
                 listOfGui[0] = guiContainer;
+                console.log(EZGUI.components.nameperso);
                 EZGUI.components.btn1.on('click', function (event, me) {
                     guiContainer.visible = false;
+                });
+                EZGUI.components.btn2.on('click', function (event, me) {
+                    console.log("btn2");
+                    for (var _i = 0, _a = Itsis.CharacterOS.listOfCharacter; _i < _a.length; _i++) {
+                        var tempChar_1 = _a[_i];
+                        console.log(tempChar_1.name + "//" + EZGUI.components.nameperso.text);
+                        if (tempChar_1.name == EZGUI.components.nameperso.text) {
+                            tempChar_1.productivity -= 10;
+                            EZGUI.components.productivity.text = tempChar_1.productivity;
+                        }
+                    }
                 });
             });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, align: "center" };
@@ -475,13 +487,18 @@ var Itsis;
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5, 0.2);
             tempObjEntree.typeItem = "entree";
-            function onDown(event, sprite) {
+            function onDown(event, tempChar) {
                 listOfGui[0].visible = true;
+                console.log(this.char);
+                console.log("name" + this.char.name);
+                EZGUI.components.nameperso.text = this.char.name;
+                console.log("pordt " + this.char.productivity);
+                EZGUI.components.productivity.text = this.char.productivity;
             }
             ;
             var tempChar = new Itsis.CharacterOS("malepirate", this.game, this.decorGroup);
             tempChar.sprite.inputEnabled = true;
-            tempChar.sprite.events.onInputDown.add(onDown, tempChar);
+            tempChar.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
             for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
                 this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];
