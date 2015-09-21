@@ -13,6 +13,7 @@ module Itsis {
         sceneryJSON;
         charJSON;
         mapOpenSpace : number[][];
+        guiContainer;
 
 
         preload(){
@@ -21,6 +22,7 @@ module Itsis {
           var isoPlugin = new Phaser.Plugin.Isometric(this.game);
           this.game.plugins.add(isoPlugin);
           this.game.iso.anchor.setTo(0.5, 0.2);
+          // tihs.guiContainer= new Object[10];
           this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
 
           // Load assets & level data
@@ -59,7 +61,34 @@ module Itsis {
 
         }
 
+
+
         create() {
+          EZGUI.renderer = this.game.renderer;
+         //   var guiObj = this.game.cache.getJSON('guiobj')guiObj ;
+          //
+          var persoGuiJSON = this.game.cache.getJSON('persogui') ;
+          var listOfGui = [10];
+          EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
+             var guiContainer = EZGUI.create(persoGuiJSON , 'kenney');
+             guiContainer.visible=false;
+             listOfGui[0] = guiContainer;
+               EZGUI.components.btn1.on('click',function (event,me)
+               {
+                 guiContainer.visible=false;
+               }
+             );
+          });
+
+
+          //
+         //      var guiContainer = EZGUI.create(guiObj , 'kenney');
+          //
+         //      EZGUI.components.btn1.on('click', function (event) {
+         //              console.log('clicked', event);
+         //          });
+          //
+         //  });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false,  align: "center" };
             this.text = this.game.add.text(0,0,"hello",style);
             this.lastTicksHour = this.game.time.time;
@@ -105,8 +134,12 @@ module Itsis {
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5,0.2);
             tempObjEntree.typeItem = "entree";
-
+            function onDown(event,sprite){
+              listOfGui[0].visible=true;
+            };
             let tempChar = new CharacterOS("malepirate",this.game,this.decorGroup);
+            tempChar.sprite.inputEnabled = true;
+            tempChar.sprite.events.onInputDown.add(onDown,tempChar);
 
             this.mapOpenSpace =[this.levelJSON.openSpace.sizex];
             for (let x=0; x < this.levelJSON.openSpace.sizex;x++){
@@ -149,6 +182,7 @@ module Itsis {
 
           // console.log(this.mapOpenSpace);
         }
+
 
         spawnCube(){
           var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);

@@ -426,6 +426,17 @@ var Itsis;
             }
         };
         Jeu.prototype.create = function () {
+            EZGUI.renderer = this.game.renderer;
+            var persoGuiJSON = this.game.cache.getJSON('persogui');
+            var listOfGui = [10];
+            EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
+                var guiContainer = EZGUI.create(persoGuiJSON, 'kenney');
+                guiContainer.visible = false;
+                listOfGui[0] = guiContainer;
+                EZGUI.components.btn1.on('click', function (event, me) {
+                    guiContainer.visible = false;
+                });
+            });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, align: "center" };
             this.text = this.game.add.text(0, 0, "hello", style);
             this.lastTicksHour = this.game.time.time;
@@ -464,7 +475,13 @@ var Itsis;
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5, 0.2);
             tempObjEntree.typeItem = "entree";
+            function onDown(event, sprite) {
+                listOfGui[0].visible = true;
+            }
+            ;
             var tempChar = new Itsis.CharacterOS("malepirate", this.game, this.decorGroup);
+            tempChar.sprite.inputEnabled = true;
+            tempChar.sprite.events.onInputDown.add(onDown, tempChar);
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
             for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
                 this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];
@@ -555,6 +572,7 @@ var Itsis;
         Loaderjeu.prototype.preload = function () {
             this.game.load.json('scenery', 'assets/scenery/scenery.json');
             this.game.load.json('characters', 'assets/characters/characters.json');
+            this.game.load.json('persogui', 'assets/gui/perso.json');
             this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
@@ -572,45 +590,28 @@ var Itsis;
             _super.apply(this, arguments);
         }
         MainMenu.prototype.create = function () {
-            //Background
-            // var background = this.add.sprite(0, 0, 'mainmenu_background');
-            // background.alpha = 0;
-            //
-            // this.add.tween(background).to({ alpha: 1}, 2000, Phaser.Easing.Bounce.InOut, true);
-            //
-            // //Title
-            // var itsisTextStyle = {
-            //   font: "bold 72px Arial",
-            //   fill: "#f00",
-            //   align: "center"
-            // }
-            // var itsisText = this.game.add.text(this.game.world.centerX, this.game.height/10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
-            // itsisText.anchor.set(0.5);
-            //
-            // //Buttons
-            // var buttonTextStyle = {
-            //   font:"32px Arial",
-            //   fill: "#f00"
-            // }
-            //
-            // var playButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
-            // playButton.anchor.set(0.5);
-            // var playButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "Jouer", buttonTextStyle);
-            // playButtonText.anchor.set(0.5);
-            //
-            // var creditsButton = this.game.add.button(this.game.world.centerX, 6*this.game.height/10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
-            // creditsButton.anchor.set(0.5);
-            // var creditsButtonText = this.game.add.text(this.game.world.centerX, 6*this.game.height/10, "Credits", buttonTextStyle);
-            // creditsButtonText.anchor.set(0.5);
-            EZGUI.renderer = this.game.renderer;
-            var guiObj = this.game.cache.getJSON('guiobj'), guiObj;
-            EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
-                //here you can pass multiple themes
-                var guiContainer = EZGUI.create(guiObj, 'kenney');
-                EZGUI.components.btn1.on('click', function (event) {
-                    console.log('clicked', event);
-                });
-            });
+            var background = this.add.sprite(0, 0, 'mainmenu_background');
+            background.alpha = 0;
+            this.add.tween(background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            var itsisTextStyle = {
+                font: "bold 72px Arial",
+                fill: "#f00",
+                align: "center"
+            };
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "ITSIS\nIT Services Industry Simulator", itsisTextStyle);
+            itsisText.anchor.set(0.5);
+            var buttonTextStyle = {
+                font: "32px Arial",
+                fill: "#f00"
+            };
+            var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            playButton.anchor.set(0.5);
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Jouer", buttonTextStyle);
+            playButtonText.anchor.set(0.5);
+            var creditsButton = this.game.add.button(this.game.world.centerX, 6 * this.game.height / 10, 'mainmenu_button', this.startCredits, this, 'over', 'out', 'down');
+            creditsButton.anchor.set(0.5);
+            var creditsButtonText = this.game.add.text(this.game.world.centerX, 6 * this.game.height / 10, "Credits", buttonTextStyle);
+            creditsButtonText.anchor.set(0.5);
         };
         MainMenu.prototype.startCredits = function () {
             this.game.state.start("Credits", true, false);
