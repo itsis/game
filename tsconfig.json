@@ -20,6 +20,7 @@
         "./src/ObjInOpenSpaceTemplate.ts",
         "./src/OpenSpace.ts",
         "./src/Preloader.ts",
+        "./src/Project.ts",
         "./src/app.ts",
         "./tsDefinitions/p2.d.ts",
         "./tsDefinitions/phaser.d.ts",

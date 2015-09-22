@@ -83,6 +83,7 @@ var Itsis;
             this.desk = null;
             this.entree = null;
             this.path = null;
+            this.lastUpdate = 0;
             for (var _i = 0, _a = CharacterOS.charJSON.characters; _i < _a.length; _i++) {
                 var ch = _a[_i];
                 if (ch.name == name) {
@@ -298,6 +299,20 @@ var Itsis;
             if (timeInOpenSpace > this.endingHour) {
                 this.state = State.goToExit;
             }
+            else {
+                if (this.lastUpdate > 0) {
+                    var dt = timeInOpenSpace - this.lastUpdate;
+                    console.log("dt =" + dt + "//" + timeInOpenSpace + "//" + this.lastUpdate);
+                    if (dt > 0.1) {
+                        Itsis.Project.instance.currentPointOfProductivity += Math.round(this.productivity * dt);
+                        this.lastUpdate = timeInOpenSpace;
+                    }
+                }
+                else {
+                    this.lastUpdate = timeInOpenSpace;
+                }
+                console.log;
+            }
         };
         CharacterOS.prototype.updateGoToExit = function (openSpace) {
             if (this.entree == null) {
@@ -433,15 +448,12 @@ var Itsis;
                 var guiContainer = EZGUI.create(persoGuiJSON, 'kenney');
                 guiContainer.visible = false;
                 listOfGui[0] = guiContainer;
-                console.log(EZGUI.components.nameperso);
                 EZGUI.components.btn1.on('click', function (event, me) {
                     guiContainer.visible = false;
                 });
                 EZGUI.components.btn2.on('click', function (event, me) {
-                    console.log("btn2");
                     for (var _i = 0, _a = Itsis.CharacterOS.listOfCharacter; _i < _a.length; _i++) {
                         var tempChar_1 = _a[_i];
-                        console.log(tempChar_1.name + "//" + EZGUI.components.nameperso.text);
                         if (tempChar_1.name == EZGUI.components.nameperso.text) {
                             tempChar_1.productivity -= 10;
                             EZGUI.components.productivity.text = tempChar_1.productivity;
@@ -489,10 +501,7 @@ var Itsis;
             tempObjEntree.typeItem = "entree";
             function onDown(event, tempChar) {
                 listOfGui[0].visible = true;
-                console.log(this.char);
-                console.log("name" + this.char.name);
                 EZGUI.components.nameperso.text = this.char.name;
-                console.log("pordt " + this.char.productivity);
                 EZGUI.components.productivity.text = this.char.productivity;
             }
             ;
@@ -532,6 +541,7 @@ var Itsis;
                     this.mapOpenSpace[isoX][isoY] = 0;
                 }
             }
+            new Itsis.Project();
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
@@ -574,6 +584,7 @@ var Itsis;
                 var itChar = _a[_i];
                 itChar.update(this.actualDate, this.mapOpenSpace);
             }
+            console.log(Itsis.Project.instance.currentPointOfProductivity);
         };
         return Jeu;
     })(Phaser.State);
@@ -675,6 +686,20 @@ var Itsis;
         return Preloader;
     })(Phaser.State);
     Itsis.Preloader = Preloader;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
+    var Project = (function () {
+        function Project() {
+            this.pointOfProductivityToReach = 1000;
+            this.currentPointOfProductivity = 0;
+            this.name = "test";
+            Project.instance = this;
+        }
+        Project.instance = null;
+        return Project;
+    })();
+    Itsis.Project = Project;
 })(Itsis || (Itsis = {}));
 /// <reference path="../tsDefinitions/phaser.d.ts" />
 /// <reference path='./ItsisGame.ts' />

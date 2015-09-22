@@ -36,6 +36,7 @@ module Itsis{
 		entree : ObjInOpenSpace = null;
 		path : Object[] = null;
 		name : String;
+		lastUpdate : number = 0;
 
 		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
 			// super();
@@ -268,9 +269,23 @@ module Itsis{
 
 
 		updateWorking(timeInOpenSpace : number){
-			if(timeInOpenSpace>this.endingHour){
+			if (timeInOpenSpace>this.endingHour){
 				this.state = State.goToExit;
 				// this.sprite.visible=false;
+			}else{
+				if (this.lastUpdate > 0){
+					let dt = timeInOpenSpace - this.lastUpdate;
+					console.log("dt =" +  dt + "//" + timeInOpenSpace + "//" + this.lastUpdate);
+					if (dt > 0.1){
+						Project.instance.currentPointOfProductivity+=Math.round(this.productivity * dt);
+						this.lastUpdate = timeInOpenSpace;
+					}
+
+				}else{
+					this.lastUpdate = timeInOpenSpace;
+				}
+				console.log
+
 			}
 			// TODO : gestion des temps de pause
 

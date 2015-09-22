@@ -191,7 +191,7 @@ module Itsis {
               }
             }
 
-
+            new Project();
           // console.log(this.mapOpenSpace);
         }
 
@@ -240,6 +240,7 @@ module Itsis {
           for (let itChar of CharacterOS.listOfCharacter){
             itChar.update(this.actualDate,this.mapOpenSpace);
           }
+          console.log(Project.instance.currentPointOfProductivity);
         }
 
     }
