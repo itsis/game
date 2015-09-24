@@ -295,23 +295,21 @@ var Itsis;
                 }
             }
         };
-        CharacterOS.prototype.updateWorking = function (timeInOpenSpace) {
+        CharacterOS.prototype.updateWorking = function (timeInOpenSpace, ticks) {
             if (timeInOpenSpace > this.endingHour) {
                 this.state = State.goToExit;
             }
             else {
                 if (this.lastUpdate > 0) {
-                    var dt = timeInOpenSpace - this.lastUpdate;
-                    console.log("dt =" + dt + "//" + timeInOpenSpace + "//" + this.lastUpdate);
+                    var dt = ticks - this.lastUpdate;
                     if (dt > 0.1) {
                         Itsis.Project.instance.currentPointOfProductivity += Math.round(this.productivity * dt);
-                        this.lastUpdate = timeInOpenSpace;
+                        this.lastUpdate = ticks;
                     }
                 }
                 else {
-                    this.lastUpdate = timeInOpenSpace;
+                    this.lastUpdate = ticks;
                 }
-                console.log;
             }
         };
         CharacterOS.prototype.updateGoToExit = function (openSpace) {
@@ -331,7 +329,7 @@ var Itsis;
                 }
             }
         };
-        CharacterOS.prototype.update = function (timeInOpenSpace, openSpace) {
+        CharacterOS.prototype.update = function (timeInOpenSpace, openSpace, ticks) {
             switch (this.state) {
                 case State.home:
                     this.updateAtHome(timeInOpenSpace);
@@ -340,7 +338,7 @@ var Itsis;
                     this.updateGoToDesk(openSpace);
                     break;
                 case State.working:
-                    this.updateWorking(timeInOpenSpace);
+                    this.updateWorking(timeInOpenSpace, ticks);
                     break;
                 case State.goToExit:
                     this.updateGoToExit(openSpace);
@@ -407,6 +405,7 @@ var Itsis;
         __extends(Jeu, _super);
         function Jeu() {
             _super.apply(this, arguments);
+            this.ticks = 0;
         }
         Jeu.prototype.preload = function () {
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
@@ -463,6 +462,7 @@ var Itsis;
             });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, align: "center" };
             this.text = this.game.add.text(0, 0, "hello", style);
+            this.but = this.game.add.text(200, 0, "hello", style);
             this.lastTicksHour = this.game.time.time;
             this.actualDate = 7.00;
             this.floorGroup = this.game.add.group();
@@ -505,7 +505,7 @@ var Itsis;
                 EZGUI.components.productivity.text = this.char.productivity;
             }
             ;
-            var tempChar = new Itsis.CharacterOS("malepirate", this.game, this.decorGroup);
+            var tempChar = new Itsis.CharacterOS("perso", this.game, this.decorGroup);
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
@@ -560,6 +560,7 @@ var Itsis;
         };
         Jeu.prototype.formatHour = function () {
             if ((this.game.time.time - this.lastTicksHour) >= 1000) {
+                this.ticks += 0.10;
                 this.lastTicksHour = this.game.time.time;
                 this.actualDate += 0.10;
                 var tempHour = Math.floor(this.actualDate);
@@ -582,9 +583,12 @@ var Itsis;
             this.formatHour();
             for (var _i = 0, _a = Itsis.CharacterOS.listOfCharacter; _i < _a.length; _i++) {
                 var itChar = _a[_i];
-                itChar.update(this.actualDate, this.mapOpenSpace);
+                itChar.update(this.actualDate, this.mapOpenSpace, this.ticks);
             }
-            console.log(Itsis.Project.instance.currentPointOfProductivity);
+            this.but.setText(Itsis.Project.instance.currentPointOfProductivity + " Produits / " + Itsis.Project.instance.pointOfProductivityToReach + " a faire");
+            if (Itsis.Project.instance.currentPointOfProductivity >= Itsis.Project.instance.pointOfProductivityToReach) {
+                console.log("win");
+            }
         };
         return Jeu;
     })(Phaser.State);
@@ -691,7 +695,7 @@ var Itsis;
 (function (Itsis) {
     var Project = (function () {
         function Project() {
-            this.pointOfProductivityToReach = 1000;
+            this.pointOfProductivityToReach = 100;
             this.currentPointOfProductivity = 0;
             this.name = "test";
             Project.instance = this;

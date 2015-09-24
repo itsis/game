@@ -7,7 +7,9 @@ module Itsis {
         decorGroup: Phaser.Group;
         cursorPos: Phaser.Plugin.Isometric.Point3;
         actualDate : number;
+        ticks : number = 0;
         text : Phaser.Text;
+        but : Phaser.Text;
         lastTicksHour : number;
         levelJSON;
         sceneryJSON;
@@ -101,6 +103,7 @@ module Itsis {
          //  });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false,  align: "center" };
             this.text = this.game.add.text(0,0,"hello",style);
+            this.but = this.game.add.text(200,0,"hello",style);
             this.lastTicksHour = this.game.time.time;
             this.actualDate=7.00;
             // Create groups for assets
@@ -149,7 +152,7 @@ module Itsis {
               EZGUI.components.nameperso.text=this.char.name;
               EZGUI.components.productivity.text=this.char.productivity;
             };
-            let tempChar = new CharacterOS("malepirate",this.game,this.decorGroup);
+            let tempChar = new CharacterOS("perso",this.game,this.decorGroup);
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
@@ -215,6 +218,7 @@ module Itsis {
 
         formatHour(){
           if ((this.game.time.time - this.lastTicksHour) >= 1000 ){
+            this.ticks+=0.10;
             this.lastTicksHour = this.game.time.time;
             this.actualDate+=0.10;
             var tempHour = Math.floor(this.actualDate);
@@ -238,9 +242,13 @@ module Itsis {
         render(){
           this.formatHour();
           for (let itChar of CharacterOS.listOfCharacter){
-            itChar.update(this.actualDate,this.mapOpenSpace);
+            itChar.update(this.actualDate,this.mapOpenSpace,this.ticks);
           }
-          console.log(Project.instance.currentPointOfProductivity);
+          // console.log(Project.instance.currentPointOfProductivity);
+          this.but.setText(Project.instance.currentPointOfProductivity + " Produits / " + Project.instance.pointOfProductivityToReach +" a faire");
+          if (Project.instance.currentPointOfProductivity >= Project.instance.pointOfProductivityToReach){
+            console.log("win");
+          }
         }
 
     }

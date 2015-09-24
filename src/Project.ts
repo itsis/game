@@ -9,7 +9,7 @@ module Itsis{
       name:String;
 
       constructor(){
-        this.pointOfProductivityToReach = 1000;
+        this.pointOfProductivityToReach = 100;
         this.currentPointOfProductivity = 0;
         this.name =  "test";
         Project.instance = this;

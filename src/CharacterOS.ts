@@ -268,23 +268,21 @@ module Itsis{
 
 
 
-		updateWorking(timeInOpenSpace : number){
+		updateWorking(timeInOpenSpace : number, ticks : number){
 			if (timeInOpenSpace>this.endingHour){
 				this.state = State.goToExit;
 				// this.sprite.visible=false;
 			}else{
 				if (this.lastUpdate > 0){
-					let dt = timeInOpenSpace - this.lastUpdate;
-					console.log("dt =" +  dt + "//" + timeInOpenSpace + "//" + this.lastUpdate);
+					let dt = ticks - this.lastUpdate;
 					if (dt > 0.1){
 						Project.instance.currentPointOfProductivity+=Math.round(this.productivity * dt);
-						this.lastUpdate = timeInOpenSpace;
+						this.lastUpdate = ticks;
 					}
 
 				}else{
-					this.lastUpdate = timeInOpenSpace;
+					this.lastUpdate = ticks;
 				}
-				console.log
 
 			}
 			// TODO : gestion des temps de pause
@@ -310,7 +308,7 @@ module Itsis{
 			}
 		}
 
-		update(timeInOpenSpace,openSpace){
+		update(timeInOpenSpace,openSpace,ticks){
 			switch(this.state){
 				case State.home:
 					this.updateAtHome(timeInOpenSpace);
@@ -319,7 +317,7 @@ module Itsis{
 					this.updateGoToDesk(openSpace);
 				break;
 				case State.working:
-					this.updateWorking(timeInOpenSpace);
+					this.updateWorking(timeInOpenSpace,ticks);
 				break;
 				case State.goToExit:
 					this.updateGoToExit(openSpace);

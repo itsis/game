@@ -3,7 +3,7 @@
   {
     "name" : "perso",
     "startinghour" : 7,
-    "endinghour" : 8,
+    "endinghour" : 16,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,
@@ -16,7 +16,7 @@
   {
     "name" : "malepirate",
     "startinghour" : 7,
-    "endinghour" : 8,
+    "endinghour" : 16,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,
