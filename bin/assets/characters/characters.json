@@ -3,7 +3,7 @@
   {
     "name" : "perso",
     "startinghour" : 7,
-    "endinghour" : 16,
+    "endinghour" : 8,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,
@@ -12,6 +12,32 @@
     "sizey" :64,
     "nbanim" : 16,
     "animationstep" : 4
+  },
+  {
+    "name" : "persofille",
+    "startinghour" : 7,
+    "endinghour" : 8,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/fille.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 12,
+    "animationstep" : 3
+  },
+  {
+    "name" : "rose",
+    "startinghour" : 7,
+    "endinghour" : 8,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/rose.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 12,
+    "animationstep" : 3
   },
   {
     "name" : "malepirate",

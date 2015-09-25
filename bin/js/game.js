@@ -228,7 +228,7 @@ var Itsis;
                                     this.sprite.animations.play("left");
                                     break;
                                 case "n":
-                                    this.sprite.animations.play("down");
+                                    this.sprite.animations.play("right");
                                     break;
                                 case "s":
                                     this.sprite.animations.play("left");
@@ -298,7 +298,6 @@ var Itsis;
                     if (itDesk.owner == null) {
                         this.desk = itDesk;
                         this.desk.owner = this;
-                        console.log(this.desk.orientation);
                         break;
                     }
                 }
@@ -525,10 +524,10 @@ var Itsis;
                 EZGUI.components.productivity.text = this.char.productivity;
             }
             ;
-            var tempChar = new Itsis.CharacterOS("perso", this.game, this.decorGroup);
+            var tempChar = new Itsis.CharacterOS("rose", this.game, this.decorGroup);
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown, { "char": tempChar });
-            var tempChar2 = new Itsis.CharacterOS("perso", this.game, this.decorGroup);
+            var tempChar2 = new Itsis.CharacterOS("persofille", this.game, this.decorGroup);
             tempChar2.sprite.inputEnabled = true;
             tempChar2.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];

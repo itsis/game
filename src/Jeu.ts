@@ -152,11 +152,11 @@ module Itsis {
               EZGUI.components.nameperso.text=this.char.name;
               EZGUI.components.productivity.text=this.char.productivity;
             };
-            let tempChar = new CharacterOS("perso",this.game,this.decorGroup);
+            let tempChar = new CharacterOS("rose",this.game,this.decorGroup);
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
-            let tempChar2 = new CharacterOS("perso",this.game,this.decorGroup);
+            let tempChar2 = new CharacterOS("persofille",this.game,this.decorGroup);
             tempChar2.sprite.inputEnabled = true;
             tempChar2.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
