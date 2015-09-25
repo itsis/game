@@ -37,6 +37,7 @@ module Itsis{
 		path : Object[] = null;
 		name : String;
 		lastUpdate : number = 0;
+		id : number = 0;
 
 		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
 			// super();
@@ -90,6 +91,7 @@ module Itsis{
 			this.locationToGo = null;
 			// console
 			CharacterOS.listOfCharacter.push(this);
+			this.id = CharacterOS.listOfCharacter.length;
 		}
 
 		setSprite(sprite){
@@ -105,6 +107,17 @@ module Itsis{
 
 			this.sprite.visible=false;
 		}
+
+		findListObjInOs(typeItem : String){
+			let objToReturn = [];
+			for (let objOs in ObjInOpenSpace.listOfObj ){
+				if (ObjInOpenSpace.listOfObj[objOs].typeItem == typeItem){
+					objToReturn.push( ObjInOpenSpace.listOfObj[objOs]);
+				}
+			}
+			return objToReturn;
+		}
+
 
 		findObjInOS(typeItem : String){
 			let objToReturn = null;
@@ -178,10 +191,10 @@ module Itsis{
 										this.sprite.animations.play("left");
 										break;
 									case "n":
-										this.sprite.animations.play("down");
+										this.sprite.animations.play("right");
 										break;
 									case "s":
-										this.sprite.animations.play("up");
+										this.sprite.animations.play("left");
 										break;
 								}
 								this.sprite.animations.stop();
@@ -249,7 +262,15 @@ module Itsis{
 
 		updateGoToDesk(openSpace){
 			if (this.desk == null){
-				this.desk = this.findObjInOS("desk");
+				let listOfDesk = this.findListObjInOs("desk");
+				for (let itDesk of listOfDesk){
+					if (itDesk.owner == null){
+						this.desk=itDesk;
+						this.desk.owner=this;
+
+						break;
+					}
+				}
 			}
 
 			if (this.desk!=null){

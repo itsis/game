@@ -14,6 +14,7 @@ module Itsis{
 		sprite : Phaser.Sprite;
 		spriteType : String;
 		frame : Number;
+		owner : CharacterOS;
 
 
 		constructor(){

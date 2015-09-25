@@ -84,6 +84,7 @@ var Itsis;
             this.entree = null;
             this.path = null;
             this.lastUpdate = 0;
+            this.id = 0;
             for (var _i = 0, _a = CharacterOS.charJSON.characters; _i < _a.length; _i++) {
                 var ch = _a[_i];
                 if (ch.name == name) {
@@ -128,6 +129,7 @@ var Itsis;
             this.speed = 200;
             this.locationToGo = null;
             CharacterOS.listOfCharacter.push(this);
+            this.id = CharacterOS.listOfCharacter.length;
         }
         CharacterOS.prototype.setSprite = function (sprite) {
             this.sprite = sprite;
@@ -138,6 +140,15 @@ var Itsis;
             this.sprite.animations.add("right", [8, 9, 10, 11], 10, true);
             this.sprite.animations.add("up", [12, 13, 14, 15], 10, true);
             this.sprite.visible = false;
+        };
+        CharacterOS.prototype.findListObjInOs = function (typeItem) {
+            var objToReturn = [];
+            for (var objOs in Itsis.ObjInOpenSpace.listOfObj) {
+                if (Itsis.ObjInOpenSpace.listOfObj[objOs].typeItem == typeItem) {
+                    objToReturn.push(Itsis.ObjInOpenSpace.listOfObj[objOs]);
+                }
+            }
+            return objToReturn;
         };
         CharacterOS.prototype.findObjInOS = function (typeItem) {
             var objToReturn = null;
@@ -220,7 +231,7 @@ var Itsis;
                                     this.sprite.animations.play("down");
                                     break;
                                 case "s":
-                                    this.sprite.animations.play("up");
+                                    this.sprite.animations.play("left");
                                     break;
                             }
                             this.sprite.animations.stop();
@@ -281,7 +292,16 @@ var Itsis;
         };
         CharacterOS.prototype.updateGoToDesk = function (openSpace) {
             if (this.desk == null) {
-                this.desk = this.findObjInOS("desk");
+                var listOfDesk = this.findListObjInOs("desk");
+                for (var _i = 0; _i < listOfDesk.length; _i++) {
+                    var itDesk = listOfDesk[_i];
+                    if (itDesk.owner == null) {
+                        this.desk = itDesk;
+                        this.desk.owner = this;
+                        console.log(this.desk.orientation);
+                        break;
+                    }
+                }
             }
             if (this.desk != null) {
                 this.createPath(this.desk, openSpace);
@@ -508,6 +528,9 @@ var Itsis;
             var tempChar = new Itsis.CharacterOS("perso", this.game, this.decorGroup);
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown, { "char": tempChar });
+            var tempChar2 = new Itsis.CharacterOS("perso", this.game, this.decorGroup);
+            tempChar2.sprite.inputEnabled = true;
+            tempChar2.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
             for (var x = 0; x < this.levelJSON.openSpace.sizex; x++) {
                 this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];

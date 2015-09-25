@@ -156,6 +156,10 @@ module Itsis {
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
+            let tempChar2 = new CharacterOS("perso",this.game,this.decorGroup);
+            tempChar2.sprite.inputEnabled = true;
+            tempChar2.sprite.events.onInputDown.add(onDown,{"char":tempChar});
+
             this.mapOpenSpace =[this.levelJSON.openSpace.sizex];
             for (let x=0; x < this.levelJSON.openSpace.sizex;x++){
               this.mapOpenSpace[x] = [this.levelJSON.openSpace.sizey];
@@ -241,6 +245,7 @@ module Itsis {
 
         render(){
           this.formatHour();
+          // console.log(CharacterOS.listOfCharacter);
           for (let itChar of CharacterOS.listOfCharacter){
             itChar.update(this.actualDate,this.mapOpenSpace,this.ticks);
           }
