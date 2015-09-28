@@ -2,6 +2,15 @@ module Itsis {
 
     export class MainMenu extends Phaser.State {
 
+          preload() {
+            let missionJSON = this.game.cache.getJSON('missions');
+            Mission.missionJSON=missionJSON;
+            for (let m of missionJSON.missions){
+              new Mission(m.id);
+            }
+
+          }
+
         create() {
             //Background
             var background = this.add.sprite(0, 0, 'mainmenu_background');
@@ -54,7 +63,8 @@ module Itsis {
         }
 
         startPlay(){
-            this.game.state.start("Loaderjeu", true, false);
+            // this.game.state.start("Loaderjeu", true, false);
+            this.game.state.start("ChooseMission", true, false);
         }
     }
 

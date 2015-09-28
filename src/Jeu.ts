@@ -250,8 +250,8 @@ module Itsis {
             itChar.update(this.actualDate,this.mapOpenSpace,this.ticks);
           }
           // console.log(Project.instance.currentPointOfProductivity);
-          this.but.setText(Project.instance.currentPointOfProductivity + " Produits / " + Project.instance.pointOfProductivityToReach +" a faire");
-          if (Project.instance.currentPointOfProductivity >= Project.instance.pointOfProductivityToReach){
+          this.but.setText(Mission.instance.currentProductivityProgression + " Produits / " + Mission.instance.aproduire +" a faire");
+          if (Mission.instance.currentProductivityProgression >= Mission.instance.aproduire){
             console.log("win");
           }
         }

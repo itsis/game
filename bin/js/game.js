@@ -13,6 +13,7 @@ var Itsis;
         Boot.prototype.preload = function () {
             this.load.image('preloadBar', 'assets/images/preloader_progressbar.png');
             this.game.load.json('guiobj', 'assets/gui/guiobj.json');
+            this.game.load.json('missions', 'assets/missions/mission.json');
         };
         Boot.prototype.create = function () {
             this.input.maxPointers = 1;
@@ -322,7 +323,7 @@ var Itsis;
                 if (this.lastUpdate > 0) {
                     var dt = ticks - this.lastUpdate;
                     if (dt > 0.1) {
-                        Itsis.Project.instance.currentPointOfProductivity += Math.round(this.productivity * dt);
+                        Itsis.Mission.instance.currentProductivityProgression += Math.round(this.productivity * dt);
                         this.lastUpdate = ticks;
                     }
                 }
@@ -375,6 +376,41 @@ var Itsis;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
+    var ChooseMission = (function (_super) {
+        __extends(ChooseMission, _super);
+        function ChooseMission() {
+            _super.apply(this, arguments);
+        }
+        ChooseMission.prototype.create = function () {
+            var background = this.add.sprite(0, 0, 'mainmenu_background');
+            background.alpha = 0;
+            this.add.tween(background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            var itsisTextStyle = {
+                font: "bold 72px Arial",
+                fill: "#00f",
+                align: "center"
+            };
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "Choose your mission", itsisTextStyle);
+            itsisText.anchor.set(0.5);
+            var buttonTextStyle = {
+                font: "32px Arial",
+                fill: "#f00"
+            };
+            var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            playButton.anchor.set(0.5);
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "Mission 1", buttonTextStyle);
+            playButtonText.anchor.set(0.5);
+        };
+        ChooseMission.prototype.startPlay = function () {
+            Itsis.Mission.chooseMission(1);
+            this.game.state.start("Loaderjeu", true, false);
+        };
+        return ChooseMission;
+    })(Phaser.State);
+    Itsis.ChooseMission = ChooseMission;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
     var Credits = (function (_super) {
         __extends(Credits, _super);
         function Credits() {
@@ -410,6 +446,7 @@ var Itsis;
             this.state.add('Boot', Itsis.Boot, true);
             this.state.add('Preloader', Itsis.Preloader, false);
             this.state.add('MainMenu', Itsis.MainMenu, false);
+            this.state.add('ChooseMission', Itsis.ChooseMission, false);
             this.state.add("Credits", Itsis.Credits, false);
             this.state.add("Loaderjeu", Itsis.Loaderjeu, false);
             this.state.add("Jeu", Itsis.Jeu, false);
@@ -607,8 +644,8 @@ var Itsis;
                 var itChar = _a[_i];
                 itChar.update(this.actualDate, this.mapOpenSpace, this.ticks);
             }
-            this.but.setText(Itsis.Project.instance.currentPointOfProductivity + " Produits / " + Itsis.Project.instance.pointOfProductivityToReach + " a faire");
-            if (Itsis.Project.instance.currentPointOfProductivity >= Itsis.Project.instance.pointOfProductivityToReach) {
+            this.but.setText(Itsis.Mission.instance.currentProductivityProgression + " Produits / " + Itsis.Mission.instance.aproduire + " a faire");
+            if (Itsis.Mission.instance.currentProductivityProgression >= Itsis.Mission.instance.aproduire) {
                 console.log("win");
             }
         };
@@ -627,6 +664,7 @@ var Itsis;
             this.game.load.json('scenery', 'assets/scenery/scenery.json');
             this.game.load.json('characters', 'assets/characters/characters.json');
             this.game.load.json('persogui', 'assets/gui/perso.json');
+            this.game.load.json('wingui', 'assets/gui/winpopup.json');
             this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
@@ -643,6 +681,14 @@ var Itsis;
         function MainMenu() {
             _super.apply(this, arguments);
         }
+        MainMenu.prototype.preload = function () {
+            var missionJSON = this.game.cache.getJSON('missions');
+            Itsis.Mission.missionJSON = missionJSON;
+            for (var _i = 0, _a = missionJSON.missions; _i < _a.length; _i++) {
+                var m = _a[_i];
+                new Itsis.Mission(m.id);
+            }
+        };
         MainMenu.prototype.create = function () {
             var background = this.add.sprite(0, 0, 'mainmenu_background');
             background.alpha = 0;
@@ -671,11 +717,42 @@ var Itsis;
             this.game.state.start("Credits", true, false);
         };
         MainMenu.prototype.startPlay = function () {
-            this.game.state.start("Loaderjeu", true, false);
+            this.game.state.start("ChooseMission", true, false);
         };
         return MainMenu;
     })(Phaser.State);
     Itsis.MainMenu = MainMenu;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
+    var Mission = (function () {
+        function Mission(id) {
+            this.currentProductivityProgression = 0;
+            for (var _i = 0, _a = Mission.missionJSON.missions; _i < _a.length; _i++) {
+                var mi = _a[_i];
+                if (mi.id == id) {
+                    this.id = mi.id;
+                    this.name = mi.name;
+                    this.aproduire = mi.aproduire;
+                    this.timeTarget = mi.time;
+                }
+            }
+            Mission.listOfMission.push(this);
+        }
+        Mission.chooseMission = function (id) {
+            for (var _i = 0, _a = Mission.listOfMission; _i < _a.length; _i++) {
+                var m = _a[_i];
+                if (m.id == id) {
+                    Mission.instance = m;
+                }
+            }
+        };
+        Mission.missionJSON = null;
+        Mission.instance = null;
+        Mission.listOfMission = [];
+        return Mission;
+    })();
+    Itsis.Mission = Mission;
 })(Itsis || (Itsis = {}));
 /// <reference path="./ObjInOpenSpace.ts"/>
 var Itsis;

@@ -297,7 +297,7 @@ module Itsis{
 				if (this.lastUpdate > 0){
 					let dt = ticks - this.lastUpdate;
 					if (dt > 0.1){
-						Project.instance.currentPointOfProductivity+=Math.round(this.productivity * dt);
+						Mission.instance.currentProductivityProgression+=Math.round(this.productivity * dt);
 						this.lastUpdate = ticks;
 					}
 

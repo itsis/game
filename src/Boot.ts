@@ -6,6 +6,7 @@ module Itsis {
 
             this.load.image('preloadBar', 'assets/images/preloader_progressbar.png');
             this.game.load.json('guiobj', 'assets/gui/guiobj.json');
+            this.game.load.json('missions', 'assets/missions/mission.json');
 
         }
 

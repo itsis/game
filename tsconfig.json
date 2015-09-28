@@ -11,11 +11,13 @@
     "files": [
         "./src/Boot.ts",
         "./src/CharacterOS.ts",
+        "./src/ChooseMission.ts",
         "./src/Credits.ts",
         "./src/ItsisGame.ts",
         "./src/Jeu.ts",
         "./src/Loaderjeu.ts",
         "./src/MainMenu.ts",
+        "./src/Mission.ts",
         "./src/ObjInOpenSpace.ts",
         "./src/ObjInOpenSpaceTemplate.ts",
         "./src/OpenSpace.ts",
