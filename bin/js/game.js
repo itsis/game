@@ -439,6 +439,41 @@ var Itsis;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
+    var EndMission = (function (_super) {
+        __extends(EndMission, _super);
+        function EndMission() {
+            _super.apply(this, arguments);
+        }
+        EndMission.prototype.create = function () {
+            var background = this.add.sprite(0, 0, 'mainmenu_background');
+            background.alpha = 0;
+            this.add.tween(background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            var itsisTextStyle = {
+                font: "bold 72px Arial",
+                fill: "#00f",
+                align: "center"
+            };
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "Choose your mission", itsisTextStyle);
+            itsisText.anchor.set(0.5);
+            var buttonTextStyle = {
+                font: "32px Arial",
+                fill: "#f00"
+            };
+            var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
+            playButton.anchor.set(0.5);
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "You win", buttonTextStyle);
+            playButtonText.anchor.set(0.5);
+        };
+        EndMission.prototype.startPlay = function () {
+            Itsis.Mission.chooseMission(1);
+            this.game.state.start("ChooseMission", true, false);
+        };
+        return EndMission;
+    })(Phaser.State);
+    Itsis.EndMission = EndMission;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
     var ItsisGame = (function (_super) {
         __extends(ItsisGame, _super);
         function ItsisGame() {
@@ -448,6 +483,7 @@ var Itsis;
             this.state.add('MainMenu', Itsis.MainMenu, false);
             this.state.add('ChooseMission', Itsis.ChooseMission, false);
             this.state.add("Credits", Itsis.Credits, false);
+            this.state.add("EndMission", Itsis.EndMission, false);
             this.state.add("Loaderjeu", Itsis.Loaderjeu, false);
             this.state.add("Jeu", Itsis.Jeu, false);
         }
@@ -600,7 +636,7 @@ var Itsis;
                     this.mapOpenSpace[isoX][isoY] = 0;
                 }
             }
-            new Itsis.Project();
+            new Project();
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
@@ -647,6 +683,8 @@ var Itsis;
             this.but.setText(Itsis.Mission.instance.currentProductivityProgression + " Produits / " + Itsis.Mission.instance.aproduire + " a faire");
             if (Itsis.Mission.instance.currentProductivityProgression >= Itsis.Mission.instance.aproduire) {
                 console.log("win");
+                Itsis.Mission.instance.state = Itsis.MissionStatus.success;
+                this.game.state.start("EndMission", true, false);
             }
         };
         return Jeu;
@@ -725,6 +763,14 @@ var Itsis;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
+    (function (MissionStatus) {
+        MissionStatus[MissionStatus["notStarted"] = 0] = "notStarted";
+        MissionStatus[MissionStatus["inProgres"] = 1] = "inProgres";
+        MissionStatus[MissionStatus["failed"] = 2] = "failed";
+        MissionStatus[MissionStatus["success"] = 3] = "success";
+    })(Itsis.MissionStatus || (Itsis.MissionStatus = {}));
+    var MissionStatus = Itsis.MissionStatus;
+    ;
     var Mission = (function () {
         function Mission(id) {
             this.currentProductivityProgression = 0;
@@ -789,20 +835,6 @@ var Itsis;
         return Preloader;
     })(Phaser.State);
     Itsis.Preloader = Preloader;
-})(Itsis || (Itsis = {}));
-var Itsis;
-(function (Itsis) {
-    var Project = (function () {
-        function Project() {
-            this.pointOfProductivityToReach = 100;
-            this.currentPointOfProductivity = 0;
-            this.name = "test";
-            Project.instance = this;
-        }
-        Project.instance = null;
-        return Project;
-    })();
-    Itsis.Project = Project;
 })(Itsis || (Itsis = {}));
 /// <reference path="../tsDefinitions/phaser.d.ts" />
 /// <reference path='./ItsisGame.ts' />

@@ -253,6 +253,8 @@ module Itsis {
           this.but.setText(Mission.instance.currentProductivityProgression + " Produits / " + Mission.instance.aproduire +" a faire");
           if (Mission.instance.currentProductivityProgression >= Mission.instance.aproduire){
             console.log("win");
+            Mission.instance.state=MissionStatus.success;
+            this.game.state.start("EndMission", true, false);
           }
         }
 

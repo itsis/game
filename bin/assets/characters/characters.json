@@ -2,8 +2,8 @@
   "characters":[
   {
     "name" : "perso",
-    "startinghour" : 7,
-    "endinghour" : 8,
+    "startinghour" : 7.3,
+    "endinghour" : 16,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,
@@ -15,8 +15,8 @@
   },
   {
     "name" : "persofille",
-    "startinghour" : 7,
-    "endinghour" : 8,
+    "startinghour" : 8,
+    "endinghour" : 17,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,
@@ -28,8 +28,8 @@
   },
   {
     "name" : "rose",
-    "startinghour" : 7,
-    "endinghour" : 8,
+    "startinghour" : 7.3,
+    "endinghour" : 16,
     "endurance" : 100,
     "productivity" : 100,
     "motivation" : 70,

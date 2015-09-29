@@ -1,4 +1,10 @@
 module Itsis{
+  export enum MissionStatus{
+			notStarted = 0,
+			inProgres =1,
+      failed=2,
+      success=3
+		};
   export class Mission{
     public static missionJSON = null;
     public static instance = null;
@@ -8,6 +14,7 @@ module Itsis{
     public aproduire : number;
     public timeTarget : number;
     public currentProductivityProgression : number = 0;
+    public status
 
     constructor(id:number){
       for (let mi of Mission.missionJSON.missions){
