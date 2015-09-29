@@ -199,7 +199,7 @@ module Itsis {
               }
             }
 
-            new Project();
+            
           // console.log(this.mapOpenSpace);
         }
 

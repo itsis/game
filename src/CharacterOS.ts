@@ -9,7 +9,8 @@ module Itsis{
 			lunch = 2,
 			breaktime = 3,
 			goToDesk = 4,
-			goToExit = 5
+			goToExit = 5,
+			problem = 6
 		};
 	class LocationToGo{
 		x : number;
@@ -297,7 +298,14 @@ module Itsis{
 				if (this.lastUpdate > 0){
 					let dt = ticks - this.lastUpdate;
 					if (dt > 0.1){
-						Mission.instance.currentProductivityProgression+=Math.round(this.productivity * dt);
+						let val = Math.random()
+						if (val>0.8){
+							this.state=State.problem;
+							console.log("Problem");
+						}else{
+								Mission.instance.currentProductivityProgression+=Math.round(this.productivity * dt);
+						}
+
 						this.lastUpdate = ticks;
 					}
 
@@ -309,6 +317,23 @@ module Itsis{
 			// TODO : gestion des temps de pause
 
 	// TODO : gestion du lunch time
+		}
+
+		updateProblem(timeInOpenSpace : number, ticks : number){
+			if (timeInOpenSpace>this.endingHour){
+				this.state = State.goToExit;
+				// this.sprite.visible=false;
+			}else{
+				let dt = ticks - this.lastUpdate;
+				if (dt > 0.1){
+					let val = Math.random();
+					if (val > 0.5){
+						this.state = State.working;
+					}
+				}
+				this.lastUpdate = ticks;
+			}
+
 		}
 
 		updateGoToExit(openSpace){
@@ -343,6 +368,8 @@ module Itsis{
 				case State.goToExit:
 					this.updateGoToExit(openSpace);
 				break;
+				case State.problem:
+					this.updateProblem(timeInOpenSpace,ticks);
 				default:
 				break;
 			}

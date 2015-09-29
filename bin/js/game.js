@@ -70,6 +70,7 @@ var Itsis;
         State[State["breaktime"] = 3] = "breaktime";
         State[State["goToDesk"] = 4] = "goToDesk";
         State[State["goToExit"] = 5] = "goToExit";
+        State[State["problem"] = 6] = "problem";
     })(Itsis.State || (Itsis.State = {}));
     var State = Itsis.State;
     ;
@@ -323,13 +324,36 @@ var Itsis;
                 if (this.lastUpdate > 0) {
                     var dt = ticks - this.lastUpdate;
                     if (dt > 0.1) {
-                        Itsis.Mission.instance.currentProductivityProgression += Math.round(this.productivity * dt);
+                        var val = Math.random();
+                        if (val > 0.8) {
+                            this.state = State.problem;
+                            console.log("Problem");
+                        }
+                        else {
+                            Itsis.Mission.instance.currentProductivityProgression += Math.round(this.productivity * dt);
+                        }
                         this.lastUpdate = ticks;
                     }
                 }
                 else {
                     this.lastUpdate = ticks;
                 }
+            }
+        };
+        CharacterOS.prototype.updateProblem = function (timeInOpenSpace, ticks) {
+            if (timeInOpenSpace > this.endingHour) {
+                this.state = State.goToExit;
+            }
+            else {
+                var dt = ticks - this.lastUpdate;
+                if (dt > 0.1) {
+                    var val = Math.random();
+                    console.log(val);
+                    if (val > 0.5) {
+                        this.state = State.working;
+                    }
+                }
+                this.lastUpdate = ticks;
             }
         };
         CharacterOS.prototype.updateGoToExit = function (openSpace) {
@@ -363,6 +387,8 @@ var Itsis;
                 case State.goToExit:
                     this.updateGoToExit(openSpace);
                     break;
+                case State.problem:
+                    this.updateProblem(timeInOpenSpace, ticks);
                 default:
                     break;
             }
