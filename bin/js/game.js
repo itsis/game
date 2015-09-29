@@ -453,7 +453,7 @@ var Itsis;
                 fill: "#00f",
                 align: "center"
             };
-            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "Choose your mission", itsisTextStyle);
+            var itsisText = this.game.add.text(this.game.world.centerX, this.game.height / 10, "Mission is Over", itsisTextStyle);
             itsisText.anchor.set(0.5);
             var buttonTextStyle = {
                 font: "32px Arial",
@@ -461,7 +461,14 @@ var Itsis;
             };
             var playButton = this.game.add.button(this.game.world.centerX, 5 * this.game.height / 10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
             playButton.anchor.set(0.5);
-            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, "You win", buttonTextStyle);
+            var label = "";
+            if (Itsis.Mission.instance.status == Itsis.MissionStatus.success) {
+                label = "You win";
+            }
+            else {
+                label = "you loose";
+            }
+            var playButtonText = this.game.add.text(this.game.world.centerX, 5 * this.game.height / 10, label, buttonTextStyle);
             playButtonText.anchor.set(0.5);
         };
         EndMission.prototype.startPlay = function () {
@@ -498,6 +505,7 @@ var Itsis;
         function Jeu() {
             _super.apply(this, arguments);
             this.ticks = 0;
+            this.nbDay = 1;
         }
         Jeu.prototype.preload = function () {
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
@@ -664,6 +672,7 @@ var Itsis;
                     this.actualDate = tempHour + 1;
                     if (this.actualDate >= 24) {
                         this.actualDate -= 24;
+                        this.nbDay += 1;
                     }
                 }
                 tempHour = Math.round(this.actualDate);
@@ -681,9 +690,14 @@ var Itsis;
                 itChar.update(this.actualDate, this.mapOpenSpace, this.ticks);
             }
             this.but.setText(Itsis.Mission.instance.currentProductivityProgression + " Produits / " + Itsis.Mission.instance.aproduire + " a faire");
-            if (Itsis.Mission.instance.currentProductivityProgression >= Itsis.Mission.instance.aproduire) {
-                console.log("win");
-                Itsis.Mission.instance.state = Itsis.MissionStatus.success;
+            if (this.nbDay < Itsis.Mission.instance.timeTarget || Itsis.Mission.instance.timeTarget == -1) {
+                if (Itsis.Mission.instance.currentProductivityProgression >= Itsis.Mission.instance.aproduire) {
+                    Itsis.Mission.instance.state = Itsis.MissionStatus.success;
+                    this.game.state.start("EndMission", true, false);
+                }
+            }
+            else {
+                Itsis.Mission.instance.state = Itsis.MissionStatus.failed;
                 this.game.state.start("EndMission", true, false);
             }
         };

@@ -23,7 +23,13 @@ module Itsis{
 
       var playButton = this.game.add.button(this.game.world.centerX, 5*this.game.height/10, 'mainmenu_button', this.startPlay, this, 'over', 'out', 'down');
       playButton.anchor.set(0.5);
-      var playButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, "You win", buttonTextStyle);
+      let label = "";
+      if (Mission.instance.status == MissionStatus.success){
+        label= "You win";
+      }else{
+        label = "you loose";
+      }
+      var playButtonText = this.game.add.text(this.game.world.centerX, 5*this.game.height/10, label, buttonTextStyle);
       playButtonText.anchor.set(0.5);
     }
 

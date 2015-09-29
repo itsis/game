@@ -16,6 +16,7 @@ module Itsis {
         charJSON;
         mapOpenSpace : number[][];
         guiContainer;
+        nbDay : number =1;
 
 
         preload(){
@@ -231,6 +232,7 @@ module Itsis {
               this.actualDate=tempHour+1;
               if (this.actualDate>=24){
                 this.actualDate-=24;
+                this.nbDay+=1;
               }
             }
             tempHour = Math.round(this.actualDate);
@@ -251,9 +253,14 @@ module Itsis {
           }
           // console.log(Project.instance.currentPointOfProductivity);
           this.but.setText(Mission.instance.currentProductivityProgression + " Produits / " + Mission.instance.aproduire +" a faire");
-          if (Mission.instance.currentProductivityProgression >= Mission.instance.aproduire){
-            console.log("win");
-            Mission.instance.state=MissionStatus.success;
+          if (this.nbDay<Mission.instance.timeTarget || Mission.instance.timeTarget == -1){
+            if (Mission.instance.currentProductivityProgression >= Mission.instance.aproduire){
+
+              Mission.instance.state=MissionStatus.success;
+              this.game.state.start("EndMission", true, false);
+            }
+          }else{
+            Mission.instance.state=MissionStatus.failed;
             this.game.state.start("EndMission", true, false);
           }
         }

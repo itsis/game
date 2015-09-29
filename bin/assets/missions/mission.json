@@ -3,8 +3,8 @@
     {
       "id" : 1,
       "name" : "mission1",
-      "aproduire" : 500,
-      "time" : -1
+      "aproduire" : 1000,
+      "time" : 2
     }
   ]
 }
