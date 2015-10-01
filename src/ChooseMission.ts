@@ -28,6 +28,9 @@ module Itsis {
       }
 
       startPlay(){
+        if (Mission.instance){
+          Mission.instance.reset();
+        }
         Mission.chooseMission(1);
         this.game.state.start("Loaderjeu", true, false);
       }

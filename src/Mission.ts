@@ -14,7 +14,7 @@ module Itsis{
     public aproduire : number;
     public timeTarget : number;
     public currentProductivityProgression : number = 0;
-    public status
+    public status:number;
 
     constructor(id:number){
       for (let mi of Mission.missionJSON.missions){
@@ -27,6 +27,12 @@ module Itsis{
       }
 
       Mission.listOfMission.push(this);
+    }
+
+    public reset(){
+      this.currentProductivityProgression = 0;
+      this.status=MissionStatus.notStarted;
+      Mission.instance = null;
     }
 
     public static chooseMission(id:number){

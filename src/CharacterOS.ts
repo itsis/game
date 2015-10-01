@@ -31,6 +31,7 @@ module Itsis{
 		motivation : number; // base 100
 		state : number;
 		speed : number ;
+		problemSprite : Phaser.Sprite;
 		sprite : Phaser.Sprite;
 		locationToGo : LocationToGo;
 		desk : ObjInOpenSpace = null;
@@ -39,6 +40,7 @@ module Itsis{
 		name : String;
 		lastUpdate : number = 0;
 		id : number = 0;
+		group : Phaser.Group;
 
 		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
 			// super();
@@ -55,6 +57,9 @@ module Itsis{
 
 					this.entree = this.findObjInOS("entree");
 					this.sprite = game.add.isoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
+					this.problemSprite = game.add.sprite(0,-38,"problem");
+					this.problemSprite.visible=false;
+					this.sprite.addChild(this.problemSprite);
 					game.physics.isoArcade.enable(this.sprite);
 					this.sprite.anchor.set(0.5);
 
@@ -301,7 +306,7 @@ module Itsis{
 						let val = Math.random()
 						if (val>0.8){
 							this.state=State.problem;
-							console.log("Problem");
+							this.problemSprite.visible=true;
 						}else{
 								Mission.instance.currentProductivityProgression+=Math.round(this.productivity * dt);
 						}
@@ -328,6 +333,7 @@ module Itsis{
 				if (dt > 0.1){
 					let val = Math.random();
 					if (val > 0.5){
+						this.problemSprite.visible=false;
 						this.state = State.working;
 					}
 				}

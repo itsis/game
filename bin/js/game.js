@@ -12,6 +12,7 @@ var Itsis;
         }
         Boot.prototype.preload = function () {
             this.load.image('preloadBar', 'assets/images/preloader_progressbar.png');
+            this.load.image('problem', 'assets/images/headache-32.png');
             this.game.load.json('guiobj', 'assets/gui/guiobj.json');
             this.game.load.json('missions', 'assets/missions/mission.json');
         };
@@ -99,6 +100,9 @@ var Itsis;
                     this.motivation = ch.motivation;
                     this.entree = this.findObjInOS("entree");
                     this.sprite = game.add.isoSprite(this.entree.sprite.isoX, this.entree.sprite.isoY, 0, name, 0, group);
+                    this.problemSprite = game.add.sprite(0, -38, "problem");
+                    this.problemSprite.visible = false;
+                    this.sprite.addChild(this.problemSprite);
                     game.physics.isoArcade.enable(this.sprite);
                     this.sprite.anchor.set(0.5);
                     this.sprite.frame = 0;
@@ -327,7 +331,7 @@ var Itsis;
                         var val = Math.random();
                         if (val > 0.8) {
                             this.state = State.problem;
-                            console.log("Problem");
+                            this.problemSprite.visible = true;
                         }
                         else {
                             Itsis.Mission.instance.currentProductivityProgression += Math.round(this.productivity * dt);
@@ -348,8 +352,8 @@ var Itsis;
                 var dt = ticks - this.lastUpdate;
                 if (dt > 0.1) {
                     var val = Math.random();
-                    console.log(val);
                     if (val > 0.5) {
+                        this.problemSprite.visible = false;
                         this.state = State.working;
                     }
                 }
@@ -428,6 +432,9 @@ var Itsis;
             playButtonText.anchor.set(0.5);
         };
         ChooseMission.prototype.startPlay = function () {
+            if (Itsis.Mission.instance) {
+                Itsis.Mission.instance.reset();
+            }
             Itsis.Mission.chooseMission(1);
             this.game.state.start("Loaderjeu", true, false);
         };
@@ -632,9 +639,11 @@ var Itsis;
             }
             ;
             var tempChar = new Itsis.CharacterOS("rose", this.game, this.decorGroup);
+            tempChar.group = this.game.add.group();
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             var tempChar2 = new Itsis.CharacterOS("persofille", this.game, this.decorGroup);
+            tempChar2.group = this.game.add.group();
             tempChar2.sprite.inputEnabled = true;
             tempChar2.sprite.events.onInputDown.add(onDown, { "char": tempChar });
             this.mapOpenSpace = [this.levelJSON.openSpace.sizex];
@@ -670,7 +679,6 @@ var Itsis;
                     this.mapOpenSpace[isoX][isoY] = 0;
                 }
             }
-            new Project();
         };
         Jeu.prototype.spawnCube = function () {
             var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
@@ -742,7 +750,6 @@ var Itsis;
             this.game.load.json('scenery', 'assets/scenery/scenery.json');
             this.game.load.json('characters', 'assets/characters/characters.json');
             this.game.load.json('persogui', 'assets/gui/perso.json');
-            this.game.load.json('wingui', 'assets/gui/winpopup.json');
             this.game.load.json('level', 'assets/maps/level_1.json');
         };
         Loaderjeu.prototype.create = function () {
@@ -825,6 +832,11 @@ var Itsis;
             }
             Mission.listOfMission.push(this);
         }
+        Mission.prototype.reset = function () {
+            this.currentProductivityProgression = 0;
+            this.status = MissionStatus.notStarted;
+            Mission.instance = null;
+        };
         Mission.chooseMission = function (id) {
             for (var _i = 0, _a = Mission.listOfMission; _i < _a.length; _i++) {
                 var m = _a[_i];

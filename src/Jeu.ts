@@ -154,10 +154,12 @@ module Itsis {
               EZGUI.components.productivity.text=this.char.productivity;
             };
             let tempChar = new CharacterOS("rose",this.game,this.decorGroup);
+            tempChar.group = this.game.add.group();
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
             let tempChar2 = new CharacterOS("persofille",this.game,this.decorGroup);
+            tempChar2.group = this.game.add.group();
             tempChar2.sprite.inputEnabled = true;
             tempChar2.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
@@ -199,7 +201,7 @@ module Itsis {
               }
             }
 
-            
+
           // console.log(this.mapOpenSpace);
         }
 
@@ -251,7 +253,6 @@ module Itsis {
           for (let itChar of CharacterOS.listOfCharacter){
             itChar.update(this.actualDate,this.mapOpenSpace,this.ticks);
           }
-          // console.log(Project.instance.currentPointOfProductivity);
           this.but.setText(Mission.instance.currentProductivityProgression + " Produits / " + Mission.instance.aproduire +" a faire");
           if (this.nbDay<Mission.instance.timeTarget || Mission.instance.timeTarget == -1){
             if (Mission.instance.currentProductivityProgression >= Mission.instance.aproduire){
