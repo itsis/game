@@ -356,11 +356,12 @@ var Itsis;
                         this.problemSprite.visible = false;
                         this.state = State.working;
                     }
+                    this.lastUpdate = ticks;
                 }
-                this.lastUpdate = ticks;
             }
         };
         CharacterOS.prototype.updateGoToExit = function (openSpace) {
+            this.problemSprite.visible = false;
             if (this.entree == null) {
                 this.entree = this.findObjInOS("entree");
             }
