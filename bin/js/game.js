@@ -624,10 +624,23 @@ var Itsis;
                     }
                 }
             }
+            function dragStop(sprite, pointer) {
+                var valX = Math.floor(pointer.position.x - sprite.position.x);
+                var valY = Math.floor(pointer.position.y - sprite.position.y);
+                console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
+                console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
+                console.log(pointer);
+                sprite.isoX += valX;
+                sprite.isoY += valY;
+            }
             for (var _b = 0, _c = Itsis.ObjInOpenSpace.listOfObj; _b < _c.length; _b++) {
                 var objToOpenspace = _c[_b];
                 objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+                console.log(objToOpenspace.sprite);
                 objToOpenspace.sprite.anchor.set(0.5);
+                objToOpenspace.sprite.inputEnabled = true;
+                objToOpenspace.sprite.input.enableDrag();
+                objToOpenspace.sprite.events.onDragStop.add(dragStop, this);
             }
             var tempObjEntree = new Itsis.ObjInOpenSpace();
             tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);

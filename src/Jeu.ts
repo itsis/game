@@ -94,14 +94,6 @@ module Itsis {
           });
 
 
-          //
-         //      var guiContainer = EZGUI.create(guiObj , 'kenney');
-          //
-         //      EZGUI.components.btn1.on('click', function (event) {
-         //              console.log('clicked', event);
-         //          });
-          //
-         //  });
             var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false,  align: "center" };
             this.text = this.game.add.text(0,0,"hello",style);
             this.but = this.game.add.text(200,0,"hello",style);
@@ -137,11 +129,39 @@ module Itsis {
                 }
             }
 
+
+
+            function dragStop(sprite,pointer){
+              let valX = Math.floor(pointer.position.x -sprite.position.x);
+              let valY = Math.floor(pointer.position.y -sprite.position.y);
+              console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
+              console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
+              console.log(pointer);
+              sprite.isoX += valX;
+              sprite.isoY += valY;
+              // sprite.position.copyFrom(pointer.position);
+              // sprite.anchor.setTo(pointer.anchor.x,pointer.anchor.y);
+
+              // console.log("-------------------------------");
+              // console.log(sprite.x + "// " + sprite.y + "//" + sprite.isoX + "// " + sprite.isoY) ;
+              // sprite.x = pointer.x;
+              // sprite.x = pointer.y;
+            }
+
+
             // Drawing
             for (let objToOpenspace of ObjInOpenSpace.listOfObj){
                 objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+                console.log(objToOpenspace.sprite);
                 objToOpenspace.sprite.anchor.set(0.5);
+                objToOpenspace.sprite.inputEnabled = true;
+                objToOpenspace.sprite.input.enableDrag();
+                //objToOpenspace.sprite.events.onDragStart.add(dragStrat, this);
+                objToOpenspace.sprite.events.onDragStop.add(dragStop, this);
+                //objToOpenspace.events.onDragStop.add(onDragStop, this);
+
             }
+
 
 
             let tempObjEntree = new ObjInOpenSpace();
@@ -206,6 +226,7 @@ module Itsis {
         }
 
 
+
         spawnCube(){
           var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
           cube.anchor.set(0.5);
@@ -264,6 +285,7 @@ module Itsis {
             Mission.instance.state=MissionStatus.failed;
             this.game.state.start("EndMission", true, false);
           }
+
         }
 
     }
