@@ -540,6 +540,7 @@ var Itsis;
             _super.apply(this, arguments);
             this.ticks = 0;
             this.nbDay = 1;
+            this.listOfTiles = [];
         }
         Jeu.prototype.preload = function () {
             var isoPlugin = new Phaser.Plugin.Isometric(this.game);
@@ -625,13 +626,16 @@ var Itsis;
                 }
             }
             function dragStop(sprite, pointer) {
-                var valX = Math.floor(pointer.position.x - sprite.position.x);
-                var valY = Math.floor(pointer.position.y - sprite.position.y);
-                console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
-                console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
-                console.log(pointer);
-                sprite.isoX += valX;
-                sprite.isoY += valY;
+                var cursorPos = new Phaser.Plugin.Isometric.Point3();
+                this.game.iso.unproject(this.game.input.activePointer.position, cursorPos);
+                this.listOfTiles.forEach(function (tile) {
+                    var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
+                    if (inBounds) {
+                        console.log(tile.isoX);
+                        sprite.isoX = tile.isoX;
+                        sprite.isoY = tile.isoY;
+                    }
+                });
             }
             for (var _b = 0, _c = Itsis.ObjInOpenSpace.listOfObj; _b < _c.length; _b++) {
                 var objToOpenspace = _c[_b];
@@ -706,6 +710,7 @@ var Itsis;
                 for (var yy = 0; yy < sizeY; yy += 38) {
                     tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                     tileFloor.anchor.set(0.5, 0);
+                    this.listOfTiles.push(tileFloor);
                 }
             }
         };

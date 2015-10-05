@@ -17,6 +17,7 @@ module Itsis {
         mapOpenSpace : number[][];
         guiContainer;
         nbDay : number =1;
+        listOfTiles : Phaser.Sprite[] = [];
 
 
         preload(){
@@ -132,13 +133,25 @@ module Itsis {
 
 
             function dragStop(sprite,pointer){
-              let valX = Math.floor(pointer.position.x -sprite.position.x);
-              let valY = Math.floor(pointer.position.y -sprite.position.y);
-              console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
-              console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
-              console.log(pointer);
-              sprite.isoX += valX;
-              sprite.isoY += valY;
+              let cursorPos = new Phaser.Plugin.Isometric.Point3();
+              this.game.iso.unproject(this.game.input.activePointer.position, cursorPos);
+              this.listOfTiles.forEach(function (tile) {
+                var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
+                if (inBounds){
+                  console.log(tile.isoX);
+                  sprite.isoX = tile.isoX;
+                  sprite.isoY = tile.isoY;
+                }
+              }
+              // let valX = Math.floor(pointer.position.x -sprite.position.x);
+              // let valY = Math.floor(pointer.position.y -sprite.position.y);
+              // console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
+              // console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
+              // console.log(pointer);
+              // sprite.isoX += Math.floor(valX/38)*38;
+              // sprite.isoY += Math.floor(valY/38)*38;
+              //sprite.isoX = 5*38;
+              //sprite.isoY = 5*38;
               // sprite.position.copyFrom(pointer.position);
               // sprite.anchor.setTo(pointer.anchor.x,pointer.anchor.y);
 
@@ -240,6 +253,7 @@ module Itsis {
                 for (let yy = 0; yy < sizeY; yy += 38) {
                    tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                    tileFloor.anchor.set(0.5, 0);
+                   this.listOfTiles.push(tileFloor);
                 }
             }
         }
