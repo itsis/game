@@ -8,7 +8,7 @@ module Itsis{
   export class Mission{
     public static missionJSON = null;
     public static instance = null;
-    public static listOfMission : mission[] = [];
+    public static listOfMission : Mission[] = [];
     public id : number;
     public name : String;
     public aproduire : number;
