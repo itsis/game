@@ -1,8 +1,11 @@
 /// <reference path="./ObjInOpenSpace.ts"/>
-/// <reference path="../tsDefinitions/astar.js" />
+// /// <reference path="../tsDefinitions/astar.js" />
 
 
 module Itsis{
+    declare var Graph: any;
+    declare var astar: any;
+
 	export enum State{
 			home = 0,
 			working =1,
@@ -30,19 +33,20 @@ module Itsis{
 		productivity : number; // base 100
 		motivation : number; // base 100
 		state : number;
-		speed : number ;
-		problemSprite : Phaser.Sprite;
-		sprite : Phaser.Sprite;
+        speed: number;
+        problemSprite: Phaser.Sprite;
+        sprite: Phaser.Plugin.Isometric.IsoSprite;
 		locationToGo : LocationToGo;
 		desk : ObjInOpenSpace = null;
 		entree : ObjInOpenSpace = null;
-		path : Object[] = null;
+		path : any[] = null;
 		name : String;
 		lastUpdate : number = 0;
 		id : number = 0;
-		group : Phaser.Group;
+        group: Phaser.Group;
+        arcade: Phaser.Plugin.Isometric.Arcade;
 
-		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
+        constructor(name: String, game: ItsisGame, isoPlugin: Phaser.Plugin.Isometric, group : Phaser.Group){
 			// super();
 
 			for (let ch of CharacterOS.charJSON.characters){
@@ -56,11 +60,13 @@ module Itsis{
 					this.motivation = ch.motivation;
 
 					this.entree = this.findObjInOS("entree");
-					this.sprite = game.add.isoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
+                    this.sprite = <Phaser.Plugin.Isometric.IsoSprite> isoPlugin.addIsoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
 					this.problemSprite = game.add.sprite(0,-38,"problem");
 					this.problemSprite.visible=false;
-					this.sprite.addChild(this.problemSprite);
-					game.physics.isoArcade.enable(this.sprite);
+                    this.sprite.addChild(this.problemSprite);
+                    this.arcade = new Phaser.Plugin.Isometric.Arcade(game);
+                    this.arcade.setBoundsToWorld();
+                    this.arcade.enable(this.sprite);
 					this.sprite.anchor.set(0.5);
 
 					this.sprite.frame = 0;
@@ -242,7 +248,7 @@ module Itsis{
 				}
 
 				if (this.path == null){
-					graph = new Graph(openSpace);
+					var graph = new Graph(openSpace);
 					let isoX = Math.round(this.sprite.isoX / 38);
           let isoY = Math.round(this.sprite.isoY / 38);
           let destX = Math.round(this.locationToGo.x /38);

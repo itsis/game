@@ -17,15 +17,16 @@ module Itsis {
         mapOpenSpace : number[][];
         guiContainer;
         nbDay : number =1;
-        listOfTiles : Phaser.Sprite[] = [];
-
+        listOfTiles: Phaser.Sprite[] = [];
+        isoPlugin: Phaser.Plugin.Isometric;
+        itsisGame: ItsisGame;
 
         preload(){
 
           // Add and enable the plug-in.
-          var isoPlugin = new Phaser.Plugin.Isometric(this.game);
-          this.game.plugins.add(isoPlugin);
-          this.game.iso.anchor.setTo(0.5, 0.2);
+          this.isoPlugin = new Phaser.Plugin.Isometric(this.game);
+          this.game.plugins.add(this.isoPlugin);
+          this.isoPlugin.projector.anchor.setTo(0.5, 0.2);
           // tihs.guiContainer= new Object[10];
           this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
 
@@ -68,11 +69,11 @@ module Itsis {
 
 
         create() {
-          EZGUI.renderer = this.game.renderer;
+            EZGUI.tilingRenderer = this.game.renderer;
          //   var guiObj = this.game.cache.getJSON('guiobj')guiObj ;
           //
-          var persoGuiJSON = this.game.cache.getJSON('persogui') ;
-          var listOfGui = [10];
+            var persoGuiJSON = this.game.cache.getJSON('persogui');
+            var listOfGui = new Array(10);
           EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
              var guiContainer = EZGUI.create(persoGuiJSON , 'kenney');
              guiContainer.visible=false;
@@ -134,37 +135,21 @@ module Itsis {
 
             function dragStop(sprite,pointer){
               let cursorPos = new Phaser.Plugin.Isometric.Point3();
-              this.game.iso.unproject(this.game.input.activePointer.position, cursorPos);
+              this.isoPlugin.projector.unproject(this.game.input.activePointer.position, cursorPos);
               this.listOfTiles.forEach(function (tile) {
-                var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
-                if (inBounds){
-                  console.log(tile.isoX);
-                  sprite.isoX = tile.isoX;
-                  sprite.isoY = tile.isoY;
-                }
-              }
-              // let valX = Math.floor(pointer.position.x -sprite.position.x);
-              // let valY = Math.floor(pointer.position.y -sprite.position.y);
-              // console.log(pointer.x + "//" + sprite.isoX + "//" + sprite.x + "//" + valX);
-              // console.log(pointer.y + "//" + sprite.isoY + "//" + sprite.y + "//" + valY);
-              // console.log(pointer);
-              // sprite.isoX += Math.floor(valX/38)*38;
-              // sprite.isoY += Math.floor(valY/38)*38;
-              //sprite.isoX = 5*38;
-              //sprite.isoY = 5*38;
-              // sprite.position.copyFrom(pointer.position);
-              // sprite.anchor.setTo(pointer.anchor.x,pointer.anchor.y);
-
-              // console.log("-------------------------------");
-              // console.log(sprite.x + "// " + sprite.y + "//" + sprite.isoX + "// " + sprite.isoY) ;
-              // sprite.x = pointer.x;
-              // sprite.x = pointer.y;
+                  var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
+                  if (inBounds) {
+                      console.log(tile.isoX);
+                      sprite.isoX = tile.isoX;
+                      sprite.isoY = tile.isoY;
+                  }
+              });
             }
 
 
             // Drawing
-            for (let objToOpenspace of ObjInOpenSpace.listOfObj){
-                objToOpenspace.sprite = this.game.add.isoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
+            for (let objToOpenspace of ObjInOpenSpace.listOfObj) {
+                objToOpenspace.sprite = <Phaser.Plugin.Isometric.IsoSprite> this.isoPlugin.addIsoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
                 console.log(objToOpenspace.sprite);
                 objToOpenspace.sprite.anchor.set(0.5);
                 objToOpenspace.sprite.inputEnabled = true;
@@ -178,7 +163,7 @@ module Itsis {
 
 
             let tempObjEntree = new ObjInOpenSpace();
-            tempObjEntree.sprite = this.game.add.isoSprite(494, 0, 0, "entree", 0, this.floorGroup);
+            tempObjEntree.sprite = <Phaser.Plugin.Isometric.IsoSprite> this.isoPlugin.addIsoSprite(494, 0, 0, "entree", 0, this.floorGroup);
             tempObjEntree.sprite.anchor.set(0.5,0.2);
             tempObjEntree.typeItem = "entree";
             function onDown(event,tempChar){
@@ -186,12 +171,12 @@ module Itsis {
               EZGUI.components.nameperso.text=this.char.name;
               EZGUI.components.productivity.text=this.char.productivity;
             };
-            let tempChar = new CharacterOS("rose",this.game,this.decorGroup);
+            let tempChar = new CharacterOS("rose", <ItsisGame>this.game, this.isoPlugin, this.decorGroup);
             tempChar.group = this.game.add.group();
             tempChar.sprite.inputEnabled = true;
             tempChar.sprite.events.onInputDown.add(onDown,{"char":tempChar});
 
-            let tempChar2 = new CharacterOS("persofille",this.game,this.decorGroup);
+            let tempChar2 = new CharacterOS("persofille", <ItsisGame>this.game, this.isoPlugin, this.decorGroup);
             tempChar2.group = this.game.add.group();
             tempChar2.sprite.inputEnabled = true;
             tempChar2.sprite.events.onInputDown.add(onDown,{"char":tempChar});
@@ -241,7 +226,7 @@ module Itsis {
 
 
         spawnCube(){
-          var cube = this.game.add.isoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
+            var cube = <Phaser.Plugin.Isometric.IsoSprite> this.isoPlugin.addIsoSprite(38, 38, 0, 'cube', 0, this.cubeGroup);
           cube.anchor.set(0.5);
         }
 
@@ -251,7 +236,7 @@ module Itsis {
             var tileFloor;
             for (let xx = 0; xx < sizeX; xx += 38) {
                 for (let yy = 0; yy < sizeY; yy += 38) {
-                   tileFloor = this.game.add.isoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
+                    tileFloor = <Phaser.Plugin.Isometric.IsoSprite> this.isoPlugin.addIsoSprite(xx, yy, 0, 'floor', 0, this.floorGroup);
                    tileFloor.anchor.set(0.5, 0);
                    this.listOfTiles.push(tileFloor);
                 }
