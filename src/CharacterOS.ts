@@ -1,15 +1,19 @@
 /// <reference path="./ObjInOpenSpace.ts"/>
-/// <reference path="../tsDefinitions/astar.js" />
+// /// <reference path="../tsDefinitions/astar.js" />
 
 
 module Itsis{
+    declare var Graph: any;
+    declare var astar: any;
+
 	export enum State{
 			home = 0,
 			working =1,
 			lunch = 2,
 			breaktime = 3,
 			goToDesk = 4,
-			goToExit = 5
+			goToExit = 5,
+			problem = 6
 		};
 	class LocationToGo{
 		x : number;
@@ -29,15 +33,20 @@ module Itsis{
 		productivity : number; // base 100
 		motivation : number; // base 100
 		state : number;
-		speed : number ;
-		sprite : Phaser.Sprite;
+        speed: number;
+        problemSprite: Phaser.Sprite;
+        sprite: Phaser.Plugin.Isometric.IsoSprite;
 		locationToGo : LocationToGo;
 		desk : ObjInOpenSpace = null;
 		entree : ObjInOpenSpace = null;
-		path : Object[] = null;
+		path : any[] = null;
 		name : String;
+		lastUpdate : number = 0;
+		id : number = 0;
+        group: Phaser.Group;
+        arcade: Phaser.Plugin.Isometric.Arcade;
 
-		constructor(name : String,game : Phaser.Game,group : Phaser.Group){
+        constructor(name: String, game: ItsisGame, isoPlugin: Phaser.Plugin.Isometric, group : Phaser.Group){
 			// super();
 
 			for (let ch of CharacterOS.charJSON.characters){
@@ -51,8 +60,13 @@ module Itsis{
 					this.motivation = ch.motivation;
 
 					this.entree = this.findObjInOS("entree");
-					this.sprite = game.add.isoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
-					game.physics.isoArcade.enable(this.sprite);
+                    this.sprite = <Phaser.Plugin.Isometric.IsoSprite> isoPlugin.addIsoSprite(this.entree.sprite.isoX,this.entree.sprite.isoY, 0, name, 0, group);
+					this.problemSprite = game.add.sprite(0,-38,"problem");
+					this.problemSprite.visible=false;
+                    this.sprite.addChild(this.problemSprite);
+                    this.arcade = new Phaser.Plugin.Isometric.Arcade(game);
+                    this.arcade.setBoundsToWorld();
+                    this.arcade.enable(this.sprite);
 					this.sprite.anchor.set(0.5);
 
 					this.sprite.frame = 0;
@@ -89,6 +103,7 @@ module Itsis{
 			this.locationToGo = null;
 			// console
 			CharacterOS.listOfCharacter.push(this);
+			this.id = CharacterOS.listOfCharacter.length;
 		}
 
 		setSprite(sprite){
@@ -104,6 +119,17 @@ module Itsis{
 
 			this.sprite.visible=false;
 		}
+
+		findListObjInOs(typeItem : String){
+			let objToReturn = [];
+			for (let objOs in ObjInOpenSpace.listOfObj ){
+				if (ObjInOpenSpace.listOfObj[objOs].typeItem == typeItem){
+					objToReturn.push( ObjInOpenSpace.listOfObj[objOs]);
+				}
+			}
+			return objToReturn;
+		}
+
 
 		findObjInOS(typeItem : String){
 			let objToReturn = null;
@@ -177,10 +203,10 @@ module Itsis{
 										this.sprite.animations.play("left");
 										break;
 									case "n":
-										this.sprite.animations.play("down");
+										this.sprite.animations.play("right");
 										break;
 									case "s":
-										this.sprite.animations.play("up");
+										this.sprite.animations.play("left");
 										break;
 								}
 								this.sprite.animations.stop();
@@ -222,7 +248,7 @@ module Itsis{
 				}
 
 				if (this.path == null){
-					graph = new Graph(openSpace);
+					var graph = new Graph(openSpace);
 					let isoX = Math.round(this.sprite.isoX / 38);
           let isoY = Math.round(this.sprite.isoY / 38);
           let destX = Math.round(this.locationToGo.x /38);
@@ -248,7 +274,15 @@ module Itsis{
 
 		updateGoToDesk(openSpace){
 			if (this.desk == null){
-				this.desk = this.findObjInOS("desk");
+				let listOfDesk = this.findListObjInOs("desk");
+				for (let itDesk of listOfDesk){
+					if (itDesk.owner == null){
+						this.desk=itDesk;
+						this.desk.owner=this;
+
+						break;
+					}
+				}
 			}
 
 			if (this.desk!=null){
@@ -267,17 +301,56 @@ module Itsis{
 
 
 
-		updateWorking(timeInOpenSpace : number){
-			if(timeInOpenSpace>this.endingHour){
+		updateWorking(timeInOpenSpace : number, ticks : number){
+			if (timeInOpenSpace>this.endingHour){
 				this.state = State.goToExit;
 				// this.sprite.visible=false;
+			}else{
+				if (this.lastUpdate > 0){
+					let dt = ticks - this.lastUpdate;
+					if (dt > 0.1){
+						let val = Math.random()
+						if (val>0.8){
+							this.state=State.problem;
+							this.problemSprite.visible=true;
+						}else{
+								Mission.instance.currentProductivityProgression+=Math.round(this.productivity * dt);
+						}
+
+						this.lastUpdate = ticks;
+					}
+
+				}else{
+					this.lastUpdate = ticks;
+				}
+
 			}
 			// TODO : gestion des temps de pause
 
 	// TODO : gestion du lunch time
 		}
 
+		updateProblem(timeInOpenSpace : number, ticks : number){
+			if (timeInOpenSpace>this.endingHour){
+				this.state = State.goToExit;
+				// this.sprite.visible=false;
+			}else{
+				let dt = ticks - this.lastUpdate;
+				if (dt > 0.1){
+					let val = Math.random();
+					if (val > 0.5){
+						this.problemSprite.visible=false;
+						this.state = State.working;
+					}
+					this.lastUpdate = ticks;
+				}
+
+			}
+
+		}
+
 		updateGoToExit(openSpace){
+			this.problemSprite.visible=false;
 			if (this.entree == null){
 				this.entree = this.findObjInOS("entree");
 			}
@@ -295,7 +368,7 @@ module Itsis{
 			}
 		}
 
-		update(timeInOpenSpace,openSpace){
+		update(timeInOpenSpace,openSpace,ticks){
 			switch(this.state){
 				case State.home:
 					this.updateAtHome(timeInOpenSpace);
@@ -304,11 +377,13 @@ module Itsis{
 					this.updateGoToDesk(openSpace);
 				break;
 				case State.working:
-					this.updateWorking(timeInOpenSpace);
+					this.updateWorking(timeInOpenSpace,ticks);
 				break;
 				case State.goToExit:
 					this.updateGoToExit(openSpace);
 				break;
+				case State.problem:
+					this.updateProblem(timeInOpenSpace,ticks);
 				default:
 				break;
 			}

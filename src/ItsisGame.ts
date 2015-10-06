@@ -10,7 +10,9 @@ module Itsis {
             this.state.add('Boot', Boot, true);
             this.state.add('Preloader', Preloader, false);
             this.state.add('MainMenu', MainMenu, false);
+            this.state.add('ChooseMission', ChooseMission, false);
             this.state.add("Credits", Credits, false);
+            this.state.add("EndMission", EndMission, false);
 
             // Actual game
             this.state.add("Loaderjeu", Loaderjeu, false);
