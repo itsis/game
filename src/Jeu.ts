@@ -139,18 +139,22 @@ module Itsis {
               this.listOfTiles.forEach(function (tile) {
                   var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
                   if (inBounds) {
-                      console.log(tile.isoX);
                       sprite.isoX = tile.isoX;
                       sprite.isoY = tile.isoY;
                   }
               });
+
+              for (let ch of CharacterOS.listOfCharacter){
+                  if (ch.desk != null && ch.desk.sprite == sprite){
+                      ch.state=State.goToDesk;
+                  }
+              }
             }
 
 
             // Drawing
             for (let objToOpenspace of ObjInOpenSpace.listOfObj) {
                 objToOpenspace.sprite = <Phaser.Plugin.Isometric.IsoSprite> this.isoPlugin.addIsoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
-                console.log(objToOpenspace.sprite);
                 objToOpenspace.sprite.anchor.set(0.5);
                 objToOpenspace.sprite.inputEnabled = true;
                 objToOpenspace.sprite.input.enableDrag();

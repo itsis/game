@@ -6,32 +6,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Itsis;
 (function (Itsis) {
-    var ItsisGame = (function (_super) {
-        __extends(ItsisGame, _super);
-        function ItsisGame() {
-            _super.call(this, 1600, 900, Phaser.AUTO, 'content', null);
-            // Main Menu
-            this.state.add('Boot', Itsis.Boot, true);
-            this.state.add('Preloader', Itsis.Preloader, false);
-            this.state.add('MainMenu', Itsis.MainMenu, false);
-            this.state.add('ChooseMission', Itsis.ChooseMission, false);
-            this.state.add("Credits", Itsis.Credits, false);
-            this.state.add("EndMission", Itsis.EndMission, false);
-            // Actual game
-            this.state.add("Loaderjeu", Itsis.Loaderjeu, false);
-            this.state.add("Jeu", Itsis.Jeu, false);
-        }
-        return ItsisGame;
-    })(Phaser.Game);
-    Itsis.ItsisGame = ItsisGame;
-})(Itsis || (Itsis = {}));
-/// <reference path="../tsDefinitions/phaser.d.ts" />
-/// <reference path='./ItsisGame.ts' />
-window.onload = function () {
-    var game = new Itsis.ItsisGame();
-};
-var Itsis;
-(function (Itsis) {
     var Boot = (function (_super) {
         __extends(Boot, _super);
         function Boot() {
@@ -558,6 +532,27 @@ var Itsis;
 })(Itsis || (Itsis = {}));
 var Itsis;
 (function (Itsis) {
+    var ItsisGame = (function (_super) {
+        __extends(ItsisGame, _super);
+        function ItsisGame() {
+            _super.call(this, 1600, 900, Phaser.AUTO, 'content', null);
+            // Main Menu
+            this.state.add('Boot', Itsis.Boot, true);
+            this.state.add('Preloader', Itsis.Preloader, false);
+            this.state.add('MainMenu', Itsis.MainMenu, false);
+            this.state.add('ChooseMission', Itsis.ChooseMission, false);
+            this.state.add("Credits", Itsis.Credits, false);
+            this.state.add("EndMission", Itsis.EndMission, false);
+            // Actual game
+            this.state.add("Loaderjeu", Itsis.Loaderjeu, false);
+            this.state.add("Jeu", Itsis.Jeu, false);
+        }
+        return ItsisGame;
+    })(Phaser.Game);
+    Itsis.ItsisGame = ItsisGame;
+})(Itsis || (Itsis = {}));
+var Itsis;
+(function (Itsis) {
     var Jeu = (function (_super) {
         __extends(Jeu, _super);
         function Jeu() {
@@ -671,17 +666,21 @@ var Itsis;
                 this.listOfTiles.forEach(function (tile) {
                     var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
                     if (inBounds) {
-                        console.log(tile.isoX);
                         sprite.isoX = tile.isoX;
                         sprite.isoY = tile.isoY;
                     }
                 });
+                for (var _i = 0, _a = Itsis.CharacterOS.listOfCharacter; _i < _a.length; _i++) {
+                    var ch = _a[_i];
+                    if (ch.desk != null && ch.desk.sprite == sprite) {
+                        ch.state = Itsis.State.goToDesk;
+                    }
+                }
             }
             // Drawing
             for (var _b = 0, _c = Itsis.ObjInOpenSpace.listOfObj; _b < _c.length; _b++) {
                 var objToOpenspace = _c[_b];
                 objToOpenspace.sprite = this.isoPlugin.addIsoSprite(objToOpenspace.locationX, objToOpenspace.locationY, 0, objToOpenspace.id, objToOpenspace.frame, this.decorGroup);
-                console.log(objToOpenspace.sprite);
                 objToOpenspace.sprite.anchor.set(0.5);
                 objToOpenspace.sprite.inputEnabled = true;
                 objToOpenspace.sprite.input.enableDrag();
@@ -974,4 +973,8 @@ var Itsis;
     })(Phaser.State);
     Itsis.Preloader = Preloader;
 })(Itsis || (Itsis = {}));
-//# sourceMappingURL=ccou.js.map
+/// <reference path="../tsDefinitions/phaser.d.ts" />
+/// <reference path='./ItsisGame.ts' />
+window.onload = function () {
+    var game = new Itsis.ItsisGame();
+};

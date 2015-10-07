@@ -17,6 +17,7 @@
         "./tsDefinitions/phaser.d.ts",
         "./tsDefinitions/pixi.d.ts",
         "./tsDefinitions/astar.js",
+        "./tsDefinitions/EZGUI.d.ts",
         "./tsDefinitions/phaser.plugin.isometric.d.ts",
         "./src/ItsisGame.ts",
         "./src/app.ts",
