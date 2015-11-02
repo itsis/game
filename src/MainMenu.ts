@@ -2,6 +2,15 @@ module Itsis {
 
     export class MainMenu extends Phaser.State {
 
+          preload() {
+            let missionJSON = this.game.cache.getJSON('missions');
+            Mission.missionJSON=missionJSON;
+            for (let m of missionJSON.missions){
+              new Mission(m.id);
+            }
+
+          }
+
         create() {
             //Background
             var background = this.add.sprite(0, 0, 'mainmenu_background');
@@ -34,6 +43,19 @@ module Itsis {
             var creditsButtonText = this.game.add.text(this.game.world.centerX, 6*this.game.height/10, "Credits", buttonTextStyle);
             creditsButtonText.anchor.set(0.5);
 
+          //   EZGUI.renderer = this.game.renderer;
+          //   var guiObj = this.game.cache.getJSON('guiobj')guiObj ;
+           //
+          //  EZGUI.Theme.load(['./assets/gui/kenney-theme/kenney-theme.json'], function () {
+           //
+          //      var guiContainer = EZGUI.create(guiObj , 'kenney');
+           //
+          //      EZGUI.components.btn1.on('click', function (event) {
+          //              console.log('clicked', event);
+          //          });
+           //
+          //  });
+
         }
 
         startCredits(){
@@ -41,7 +63,8 @@ module Itsis {
         }
 
         startPlay(){
-            this.game.state.start("Loaderjeu", true, false);
+            // this.game.state.start("Loaderjeu", true, false);
+            this.game.state.start("ChooseMission", true, false);
         }
     }
 

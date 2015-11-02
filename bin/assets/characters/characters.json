@@ -1,0 +1,56 @@
+{
+  "characters":[
+  {
+    "name" : "perso",
+    "startinghour" : 7.3,
+    "endinghour" : 16,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/perso.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 16,
+    "animationstep" : 4
+  },
+  {
+    "name" : "persofille",
+    "startinghour" : 8,
+    "endinghour" : 17,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/fille.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 12,
+    "animationstep" : 3
+  },
+  {
+    "name" : "rose",
+    "startinghour" : 7.3,
+    "endinghour" : 16,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/rose.png",
+    "sizex" : 64,
+    "sizey" :64,
+    "nbanim" : 12,
+    "animationstep" : 3
+  },
+  {
+    "name" : "malepirate",
+    "startinghour" : 7,
+    "endinghour" : 16,
+    "endurance" : 100,
+    "productivity" : 100,
+    "motivation" : 70,
+    "sprite" : "assets/characters/male_pirate.png",
+    "sizex" : 32,
+    "sizey" :48,
+    "nbanim" : 16,
+    "animationstep" : 4
+  }
+  ]
+}
