@@ -19,11 +19,7 @@
         "height":98,
         "frame":1,
         "rotate":0,
-<<<<<<< HEAD
-        "orientation":"w",
-=======
         "orientation":"n",
->>>>>>> afc5112008273b31f681c35aafb44bc1345e3ac4
         "motivation":"+1",
         "price":"350"
     }],
